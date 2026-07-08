@@ -82,6 +82,7 @@ function sortStations(stations: RadioStation[], sort: RadioFilters['sort'], sett
 
 export default function GlobalRadioApp() {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const playerColumnRef = useRef<HTMLElement>(null);
   const playbackTimerRef = useRef<number | null>(null);
   const alarmRef = useRef<RadioAlarmSettings>(loadRadioAlarmSettings());
   const playDirectRef = useRef<(station?: RadioStation | null) => Promise<void>>(async () => undefined);
@@ -115,6 +116,7 @@ export default function GlobalRadioApp() {
   const currentQuality = currentPlaybackStation ? scoreStationQuality(currentPlaybackStation) : null;
   const countryCount = useMemo(() => new Set(displayedStations.map((station) => station.countrycode || station.country).filter(Boolean)).size, [displayedStations]);
   const hasMountedYouTube = selectedStation?.stationuuid === youtubeMountedStationId;
+  const hasPlayerContext = Boolean(currentPlaybackStation);
   const alarmSummary = alarm.enabled && alarm.station ? `${alarm.time} · ${alarm.station.name}` : '알람 꺼짐';
   const nowPlayingSummary = nowPlaying.trackTitle ? `${nowPlaying.artist ? `${nowPlaying.artist} - ` : ''}${nowPlaying.trackTitle}` : nowPlaying.status === 'available' ? '현재곡 확인됨' : '현재곡 대기';
   const isJapanFocused =
@@ -129,6 +131,14 @@ export default function GlobalRadioApp() {
 
   const showToast = useCallback((message: string, tone: ToastState['tone'] = 'info') => {
     setToast({ tone, message });
+  }, []);
+
+  const bringPlayerIntoView = useCallback(() => {
+    window.setTimeout(() => {
+      if (window.matchMedia('(max-width: 1040px)').matches) {
+        playerColumnRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 0);
   }, []);
 
   useEffect(() => {
@@ -161,7 +171,7 @@ export default function GlobalRadioApp() {
             return current;
           }
 
-          return sorted[0] ?? null;
+          return null;
         });
       } catch {
         setListError('방송국 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
@@ -206,6 +216,7 @@ export default function GlobalRadioApp() {
       clearPlaybackTimer();
       setSelectedStation(station);
       setActiveStation(station);
+      bringPlayerIntoView();
       setActiveSourceType('radio');
       setPlaybackStatus('loading');
       setPlaybackError('');
@@ -243,7 +254,7 @@ export default function GlobalRadioApp() {
         );
       }
     },
-    [clearPlaybackTimer, recent, refreshNowPlaying, selectedStation]
+    [bringPlayerIntoView, clearPlaybackTimer, recent, refreshNowPlaying, selectedStation]
   );
 
   useEffect(() => {
@@ -402,6 +413,7 @@ export default function GlobalRadioApp() {
     audioRef.current?.pause();
     setSelectedStation(station);
     setActiveStation(station);
+    bringPlayerIntoView();
     setActiveSourceType('youtube');
     setPlaybackStatus('paused');
     setYoutubeMountedStationId(station.stationuuid);
@@ -515,6 +527,7 @@ export default function GlobalRadioApp() {
             onPlay={(nextStation) => void playDirect(nextStation)}
             onSelect={(nextStation) => {
               setSelectedStation(nextStation);
+              bringPlayerIntoView();
               if (!activeStation) {
                 setNowPlaying(getStationOnlyNowPlaying(nextStation));
               }
@@ -665,7 +678,7 @@ export default function GlobalRadioApp() {
             <AlarmPanel alarm={alarm} selectedStation={selectedStation} onChange={updateAlarm} onUseSelectedStation={useSelectedStationForAlarm} onTestAlarm={testAlarm} />
           </div>
         ) : (
-          <div className="radio-workspace">
+          <div className={`radio-workspace${hasPlayerContext ? ' has-player-context' : ''}`}>
             <section className="radio-list-panel" aria-label="방송국 목록">
               {view === 'discover' ? (
                 <>
@@ -702,7 +715,7 @@ export default function GlobalRadioApp() {
               {renderStationList()}
             </section>
 
-            <section className="player-column" aria-label="재생 정보">
+            <section className="player-column" ref={playerColumnRef} aria-label="재생 정보" tabIndex={-1}>
               <DirectAudioPlayer
                 audioRef={audioRef}
                 station={currentPlaybackStation}

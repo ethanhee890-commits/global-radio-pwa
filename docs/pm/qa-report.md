@@ -26,6 +26,7 @@ tags:
 - 앱 타이틀을 `지구라디오 - 지금 들을 방송을 고르세요`로 변경
 - 히어로 카피, CTA, 상태 스트립, 내비게이션 라벨을 청취 행동 중심으로 재정리
 - `Preferences`, `Morning Radio`, `Now Playing` 등 보이는 영어 보조 라벨을 한국어 톤으로 정리
+- 모바일/태블릿에서 방송 선택 후 재생 정보 영역이 목록 아래에 묻히지 않도록 상단으로 이동
 
 ## Automated Checks
 
@@ -60,6 +61,12 @@ tags:
   - 360px settings view: `설정` tab active, alarm panel width 336px, horizontal overflow none
   - visible legacy English labels (`Preferences`, `Morning Radio`, `Now Playing`, `Listen smarter`): none
   - console errors/warnings during UI check: none
+- Player placement UX check with clean storage: PASS
+  - initial 360px viewport: no auto-selected station, search/list panel appears before player panel
+  - after selecting first station at 360px: player panel ordered above list, scrolled to top of player panel, selected station shown in direct player
+  - after selecting first station at 676px: player panel ordered above list, scrolled to top of player panel
+  - desktop 1200px: existing two-column layout preserved
+  - horizontal overflow: none
 - KEXP now-playing browser check: PASS
   - provider: `KEXP 공개 API`
   - sample track loaded during QA: `Won't Wait`

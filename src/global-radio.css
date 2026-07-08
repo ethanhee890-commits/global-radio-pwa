@@ -351,6 +351,11 @@ a:focus-visible {
   gap: 14px;
   position: sticky;
   top: 84px;
+  scroll-margin-top: 14px;
+}
+
+.player-column:focus {
+  outline: none;
 }
 
 .radio-search {
@@ -1249,6 +1254,10 @@ a:focus-visible {
 
   .player-column {
     position: static;
+  }
+
+  .radio-workspace.has-player-context .player-column {
+    order: -1;
   }
 
   .radio-nav {
