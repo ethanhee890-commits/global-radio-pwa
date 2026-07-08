@@ -1,6 +1,6 @@
 import { Heart, Pause, Play, Radio, Youtube } from 'lucide-react';
 import { scoreStationQuality } from '../lib/qualityScore';
-import type { PlaybackStatus, RadioStation } from '../types/station';
+import type { NowPlayingInfo, PlaybackStatus, RadioStation } from '../types/station';
 import { QualityBadge } from './QualityBadge';
 
 export function MiniPlayer({
@@ -8,6 +8,7 @@ export function MiniPlayer({
   sourceType,
   status,
   isFavorite,
+  nowPlaying,
   onPlay,
   onPause,
   onToggleFavorite
@@ -16,6 +17,7 @@ export function MiniPlayer({
   sourceType: 'radio' | 'youtube';
   status: PlaybackStatus;
   isFavorite: boolean;
+  nowPlaying?: NowPlayingInfo;
   onPlay: () => void;
   onPause: () => void;
   onToggleFavorite: () => void;
@@ -26,6 +28,10 @@ export function MiniPlayer({
 
   const quality = scoreStationQuality(station);
   const SourceIcon = sourceType === 'youtube' ? Youtube : Radio;
+  const trackTitle = nowPlaying?.trackTitle;
+  const artist = nowPlaying?.artist;
+  const primaryTitle = trackTitle ? `${artist ? `${artist} - ` : ''}${trackTitle}` : station.name;
+  const secondaryTitle = trackTitle ? station.name : [station.country, station.language].filter(Boolean).join(' / ');
 
   return (
     <aside className="mini-player" aria-label="현재 재생">
@@ -33,7 +39,10 @@ export function MiniPlayer({
         <SourceIcon aria-hidden="true" size={18} />
         <span>{sourceType === 'youtube' ? 'YouTube' : 'Radio Stream'}</span>
       </div>
-      <strong>{station.name}</strong>
+      <div className="mini-player-track">
+        <strong>{primaryTitle}</strong>
+        {secondaryTitle ? <small>{secondaryTitle}</small> : null}
+      </div>
       <QualityBadge quality={quality} />
       <div className="mini-player-actions">
         {status === 'playing' ? (

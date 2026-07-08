@@ -27,7 +27,7 @@ export function SearchBar({
           type="search"
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="방송국명, 국가, 언어, 장르를 입력해 보세요"
+          placeholder="방송국명, 국가, 언어, 장르를 입력해 보세요."
           autoComplete="off"
         />
         <button className="radio-button primary" type="submit" disabled={loading}>

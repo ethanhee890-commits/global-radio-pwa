@@ -22,7 +22,7 @@ export function StationDetail({
       <aside className="station-detail empty-detail">
         <RadioTower aria-hidden="true" size={24} />
         <strong>방송국을 선택해 주세요.</strong>
-        <p>품질 배지와 재생 소스 정보를 여기에서 확인할 수 있어요.</p>
+        <p>품질 점수, 재생 경로, 대체 소스 정보를 여기에서 확인할 수 있습니다.</p>
       </aside>
     );
   }
@@ -37,7 +37,7 @@ export function StationDetail({
         <div>
           <span>선택한 방송국</span>
           <h2>{station.name}</h2>
-          <p>{[station.country, station.language].filter(Boolean).join(' · ') || '지역 정보 확인 필요'}</p>
+          <p>{[station.country, station.language].filter(Boolean).join(' / ') || '지역 정보 확인 필요'}</p>
         </div>
         <QualityBadge quality={quality} />
       </div>

@@ -35,7 +35,7 @@ export function YouTubeAlternatePlayer({
           <span>{source.label}</span>
         </div>
       </div>
-      <p>YouTube는 별도 플레이어로 재생돼요. 오디오만 추출하지 않습니다.</p>
+      <p>YouTube는 보이는 플레이어로만 재생합니다. 오디오 추출이나 백그라운드 재생은 사용하지 않습니다.</p>
       {!mounted ? (
         <button className="radio-button youtube" type="button" onClick={onMount}>
           <Youtube aria-hidden="true" size={17} />

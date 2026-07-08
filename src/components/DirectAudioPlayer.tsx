@@ -49,7 +49,7 @@ export function DirectAudioPlayer({
 
       <audio ref={audioRef} className="native-audio" controls preload="none" />
 
-      {status === 'autoplay_blocked' ? <p className="player-warning">브라우저 정책상 재생 버튼을 한 번 더 눌러주세요.</p> : null}
+      {status === 'autoplay_blocked' ? <p className="player-warning">브라우저 정책상 재생 버튼을 한 번 더 눌러야 합니다.</p> : null}
       {status === 'error' && error ? <p className="player-error">{error}</p> : null}
     </section>
   );

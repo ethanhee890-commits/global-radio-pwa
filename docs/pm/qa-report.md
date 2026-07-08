@@ -7,34 +7,55 @@ tags:
   - qa
   - global-radio
   - japan-radio
+  - alarm
+  - now-playing
 ---
 
-# QA Report - 지구라디오 채널 확장
+# QA Report - 지구라디오 알람 및 현재곡 업데이트
 
 ## Scope
 
-- 기본 discovery를 단일 `jazz` 검색에서 전세계 다국가 discovery로 변경
-- Radio Browser country filter를 ISO country code 기반으로 안정화
-- curated fallback catalog를 51개 방송국, 14개 국가로 확장
-- 일본은 전용 앱으로 좁히지 않고, 우선 국가로 강화
-- 일본 fallback seed: 12개
-- 일본 CTA: `JP + japanese + 전체 태그`로 Radio Browser 실제 일본 채널까지 조회
-- 일본 추천/공개 FM/NHK quick filter 유지
-- radiko 우회, 비공식 NHK mirror, hidden YouTube, audio extraction 금지 유지
+- 현재 재생 중인 방송의 프로그램명/곡명 패널 추가
+- KEXP 공식 now-playing API 연동 및 Media Session metadata 반영
+- 지원 API가 없는 방송은 추정값을 만들지 않고 미지원 상태로 표시
+- 앱이 열린 상태에서 지정 시각에 선택 채널 재생을 시도하는 라디오 알람 MVP 추가
+- 설정 화면에 알람 패널 추가
+- 깨진 한글 UI 문구 정리
+- 새 패널을 포함한 데스크톱 및 360px 모바일 레이아웃 정리
+- CSP에 `https://api.kexp.org`를 허용해 공식 now-playing API 호출 가능하게 수정
 
 ## Automated Checks
 
 - `npm.cmd run verify`: PASS
   - lint: PASS
   - typecheck: PASS
-  - vitest: 5 files / 14 tests PASS
+  - vitest: 7 files / 23 tests PASS
   - build: PASS
   - security scan: PASS
-- `npm.cmd audit`: PASS, vulnerabilities 0
-- Browser QA with local Chrome against Vite preview: PASS
-  - global discovery catalog test added
-  - Radio Browser country-code routing test added
-  - insecure favicon filtering test added
+- `npm.cmd audit --audit-level=moderate`: PASS, vulnerabilities 0
+
+## Browser Checks
+
+- Current dev URL: `http://127.0.0.1:5179/`
+- Production preview URL: `http://127.0.0.1:5184/`
+- Desktop preview 1366px: PASS
+  - hero title visible
+  - now-playing panel visible
+  - direct player / now-playing / station detail panels visible
+  - settings alarm panel visible
+  - horizontal overflow: none
+  - console error: none
+- Mobile 360px dev URL: PASS
+  - document width: 360
+  - horizontal overflow: none
+  - now-playing panel visible
+  - settings alarm panel visible
+  - app console errors: none
+- KEXP now-playing browser check: PASS
+  - provider: `KEXP 공개 API`
+  - sample track loaded during QA: `Won't Wait`
+  - sample artist loaded during QA: `Makthaverskan`
+  - console errors after CSP fix: none
 
 ## Current Catalog Evidence
 
@@ -43,38 +64,9 @@ tags:
 - non-Japan fallback stations: 39
 - covered country codes: JP, KR, US, GB, DE, FR, CA, AU, NL, BR, ES, IT, TW, SG
 
-## Browser Checks
-
-- Local preview URL: `http://127.0.0.1:5183/`
-- Desktop default discovery: PASS
-  - visible station cards: 124
-  - detected country coverage: 16 displayed country strings across the list
-  - NHK WORLD-JAPAN and Chofu FM appear in the default high-quality group
-  - horizontal overflow: none
-  - console warning/error: none
-- Japan CTA: PASS
-  - visible station cards after CTA: 112
-  - NHK WORLD-JAPAN: visible
-  - Shonan Beach FM: visible
-  - FM Kahoku: visible
-  - Chofu FM: visible
-  - horizontal overflow: none
-- Mobile 360px: PASS
-  - visible station cards: 124
-  - document width: 360
-  - scroll width: 360
-  - horizontal overflow: none
-
-## Stream Checks To Refresh
-
-- NHK WORLD-JAPAN HLS playlist
-- Shonan Beach FM HTTPS MP3 stream
-- FM Kahoku HTTP MP3 stream
-- Chofu FM HLS stream
-- Representative non-Japan streams from US, GB, FR, TW
-
 ## Not Checked
 
 - iOS Safari real-device direct audio playback
+- closed/background browser alarm reliability
 - radiko-only Japan domestic station playback
-- Long-running live-stream stability
+- long-running live-stream stability

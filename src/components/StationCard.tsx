@@ -49,7 +49,7 @@ export function StationCard({
           <button className="station-title-button" type="button" onClick={() => onSelect(station)}>
             <strong>{station.name}</strong>
           </button>
-          <p>{[station.country, station.language].filter(Boolean).join(' · ') || '출처 정보 확인 필요'}</p>
+          <p>{[station.country, station.language].filter(Boolean).join(' / ') || '출처 정보 확인 필요'}</p>
         </div>
       </div>
 
@@ -57,7 +57,7 @@ export function StationCard({
         <QualityBadge quality={quality} />
         <span>
           <Radio aria-hidden="true" size={14} />
-          {station.codec || 'codec ?'} · {station.bitrate ? `${station.bitrate}kbps` : 'bitrate ?'} · {station.hls === 1 ? 'HLS' : 'Direct'}
+          {station.codec || 'codec ?'} / {station.bitrate ? `${station.bitrate}kbps` : 'bitrate ?'} / {station.hls === 1 ? 'HLS' : 'Direct'}
         </span>
       </div>
 

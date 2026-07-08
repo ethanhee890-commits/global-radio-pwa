@@ -34,7 +34,7 @@ export function scoreStationQuality(station: StationQualityInput): StationQualit
       score: 0,
       grade: 'failed',
       label: QUALITY_LABELS.failed,
-      reasons: ['최근 검사에서 재생 실패로 표시됐어요.'],
+      reasons: ['최근 검사에서 재생 실패로 표시되었습니다.'],
       isHttps,
       isLikelyPlayable: false
     };

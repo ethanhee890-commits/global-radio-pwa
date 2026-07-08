@@ -34,7 +34,7 @@ const LANGUAGE_OPTIONS = [
   { label: '프랑스어', value: 'french' },
   { label: '스페인어', value: 'spanish' },
   { label: '중국어', value: 'chinese' },
-  { label: '음악 중심', value: 'instrumental' }
+  { label: '연주 음악', value: 'instrumental' }
 ];
 
 const GENRE_OPTIONS = [
@@ -104,7 +104,7 @@ export function FilterBar({
           정렬
         </span>
         <select value={filters.sort} onChange={(event) => onChange({ ...filters, sort: event.target.value as RadioFilters['sort'] })}>
-          <option value="quality">음질순</option>
+          <option value="quality">품질순</option>
           <option value="popular">인기순</option>
           <option value="name">이름순</option>
         </select>

@@ -1,8 +1,10 @@
-import type { GlobalRadioSettings, RadioStation, StoredStation } from '../types/station';
+import { DEFAULT_RADIO_ALARM } from './radioAlarm';
+import type { GlobalRadioSettings, RadioAlarmSettings, RadioStation, StoredStation } from '../types/station';
 
 export const FAVORITES_STORAGE_KEY = 'global-radio-pwa:favorites:v1';
 export const RECENT_STORAGE_KEY = 'global-radio-pwa:recent:v1';
 export const SETTINGS_STORAGE_KEY = 'global-radio-pwa:settings:v1';
+export const ALARM_STORAGE_KEY = 'global-radio-pwa:alarm:v1';
 
 export const DEFAULT_GLOBAL_RADIO_SETTINGS: GlobalRadioSettings = {
   preferHttps: true,
@@ -74,6 +76,17 @@ export function loadGlobalRadioSettings(): GlobalRadioSettings {
 
 export function saveGlobalRadioSettings(settings: GlobalRadioSettings): void {
   writeJson(SETTINGS_STORAGE_KEY, settings);
+}
+
+export function loadRadioAlarmSettings(): RadioAlarmSettings {
+  return {
+    ...DEFAULT_RADIO_ALARM,
+    ...readJson<Partial<RadioAlarmSettings>>(ALARM_STORAGE_KEY, {})
+  };
+}
+
+export function saveRadioAlarmSettings(alarm: RadioAlarmSettings): void {
+  writeJson(ALARM_STORAGE_KEY, alarm);
 }
 
 export function upsertStoredStation(stations: StoredStation[], station: RadioStation): StoredStation[] {

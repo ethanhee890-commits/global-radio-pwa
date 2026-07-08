@@ -39,6 +39,6 @@ describe('scoreStationQuality', () => {
     });
 
     expect(['unknown', 'fair']).toContain(quality.grade);
-    expect(quality.reasons.join(' ')).toContain('비트레이트');
+    expect(quality.reasons.join(' ')).toContain('비트레이트 확인 필요');
   });
 });

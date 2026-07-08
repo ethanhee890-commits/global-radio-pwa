@@ -104,3 +104,26 @@ export type GlobalRadioSettings = {
   hideLowQuality: boolean;
   showYouTubeAlternates: boolean;
 };
+
+export type RadioAlarmSettings = {
+  enabled: boolean;
+  time: string;
+  station: StoredStation | null;
+  lastTriggeredDate?: string;
+};
+
+export type NowPlayingStatus = 'idle' | 'checking' | 'available' | 'unavailable' | 'error';
+
+export type NowPlayingInfo = {
+  status: NowPlayingStatus;
+  stationName?: string;
+  provider?: string;
+  programTitle?: string;
+  trackTitle?: string;
+  artist?: string;
+  album?: string;
+  artworkUrl?: string;
+  sourceUrl?: string;
+  checkedAt?: string;
+  message: string;
+};
