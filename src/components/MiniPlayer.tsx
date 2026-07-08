@@ -37,7 +37,7 @@ export function MiniPlayer({
     <aside className="mini-player" aria-label="현재 재생">
       <div>
         <SourceIcon aria-hidden="true" size={18} />
-        <span>{sourceType === 'youtube' ? 'YouTube' : 'Radio Stream'}</span>
+        <span>{sourceType === 'youtube' ? 'YouTube' : '라디오 스트림'}</span>
       </div>
       <div className="mini-player-track">
         <strong>{primaryTitle}</strong>
@@ -54,7 +54,7 @@ export function MiniPlayer({
             <Play aria-hidden="true" size={17} />
           </button>
         )}
-        <button type="button" onClick={onToggleFavorite} aria-pressed={isFavorite} aria-label="즐겨찾기 전환">
+        <button type="button" onClick={onToggleFavorite} aria-pressed={isFavorite} aria-label="저장 전환">
           <Heart aria-hidden="true" size={17} fill={isFavorite ? 'currentColor' : 'none'} />
         </button>
       </div>

@@ -72,14 +72,14 @@ export function StationCard({
       <div className="station-actions">
         <button className="radio-button primary" type="button" onClick={() => onPlay(station)} aria-label={`${station.name} 재생하기`}>
           <Play aria-hidden="true" size={17} />
-          재생하기
+          재생
         </button>
         <button
           className="radio-button secondary"
           type="button"
           onClick={() => onToggleFavorite(station)}
           aria-pressed={isFavorite}
-          aria-label={isFavorite ? `${station.name} 즐겨찾기 해제` : `${station.name} 즐겨찾기에 추가`}
+          aria-label={isFavorite ? `${station.name} 저장 해제` : `${station.name} 저장`}
         >
           <Heart aria-hidden="true" size={17} fill={isFavorite ? 'currentColor' : 'none'} />
           {isFavorite ? '저장됨' : '저장'}

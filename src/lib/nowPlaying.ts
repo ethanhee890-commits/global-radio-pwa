@@ -28,7 +28,7 @@ export function getStationOnlyNowPlaying(station: RadioStation | null): NowPlayi
   if (!station) {
     return {
       status: 'idle',
-      message: '방송국을 선택하면 현재 재생 정보가 여기 표시됩니다.'
+      message: '방송국을 선택하면 현재 재생 정보가 여기에 표시됩니다.'
     };
   }
 

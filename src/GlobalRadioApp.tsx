@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Headphones, Loader2, Radio, RotateCcw, Settings, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
+import { Clock3, Gauge, Globe2, Headphones, Loader2, Music2, Radio, RotateCcw, Settings, ShieldCheck, Trash2 } from 'lucide-react';
 import { AlarmPanel } from './components/AlarmPanel';
 import { DirectAudioPlayer } from './components/DirectAudioPlayer';
 import { FilterBar, type RadioFilters } from './components/FilterBar';
@@ -112,7 +112,11 @@ export default function GlobalRadioApp() {
   const recentStations = useMemo(() => recent.map(stationFromStored), [recent]);
   const displayedStations = view === 'favorites' ? favoriteStations : view === 'recent' ? recentStations : visibleStations;
   const currentPlaybackStation = activeStation ?? selectedStation;
+  const currentQuality = currentPlaybackStation ? scoreStationQuality(currentPlaybackStation) : null;
+  const countryCount = useMemo(() => new Set(displayedStations.map((station) => station.countrycode || station.country).filter(Boolean)).size, [displayedStations]);
   const hasMountedYouTube = selectedStation?.stationuuid === youtubeMountedStationId;
+  const alarmSummary = alarm.enabled && alarm.station ? `${alarm.time} · ${alarm.station.name}` : '알람 꺼짐';
+  const nowPlayingSummary = nowPlaying.trackTitle ? `${nowPlaying.artist ? `${nowPlaying.artist} - ` : ''}${nowPlaying.trackTitle}` : nowPlaying.status === 'available' ? '현재곡 확인됨' : '현재곡 대기';
   const isJapanFocused =
     view === 'discover' &&
     (filters.country === 'Japan' ||
@@ -371,6 +375,18 @@ export default function GlobalRadioApp() {
     void loadStations(nextFilters, '');
   }
 
+  function focusNowPlayingSupported() {
+    const nextFilters = {
+      ...DEFAULT_FILTERS,
+      country: 'US'
+    };
+
+    setView('discover');
+    setQuery('KEXP');
+    setFilters(nextFilters);
+    void loadStations(nextFilters, 'KEXP');
+  }
+
   function pauseDirect() {
     audioRef.current?.pause();
     setPlaybackStatus('paused');
@@ -451,7 +467,7 @@ export default function GlobalRadioApp() {
   function renderStationList() {
     if (loading) {
       return (
-        <div className="station-list" aria-label="로딩 중">
+        <div className="station-list" aria-label="방송국을 불러오는 중">
           {Array.from({ length: 5 }, (_, index) => (
             <div className="station-skeleton" key={index} />
           ))}
@@ -465,7 +481,7 @@ export default function GlobalRadioApp() {
           <RotateCcw aria-hidden="true" size={24} />
           <p>{listError}</p>
           <button className="radio-button secondary" type="button" onClick={() => void loadStations(filters, query)}>
-            다시 시도하기
+            다시 시도
           </button>
         </div>
       );
@@ -474,10 +490,10 @@ export default function GlobalRadioApp() {
     if (displayedStations.length === 0) {
       const message =
         view === 'favorites'
-          ? '아직 즐겨찾기한 방송이 없습니다. 마음에 드는 방송을 저장해 보세요.'
+          ? '저장한 방송이 아직 없습니다. 마음에 드는 방송을 저장해 보세요.'
           : view === 'recent'
-            ? '아직 들은 방송이 없습니다. 먼저 방송국을 재생해 보세요.'
-            : '검색 결과가 없습니다. 다른 국가나 장르로 찾아보세요.';
+            ? '최근 들은 방송이 없습니다. 먼저 방송을 재생해 보세요.'
+            : '조건에 맞는 방송이 없습니다. 국가나 장르를 넓혀 보세요.';
 
       return (
         <div className="radio-empty-state">
@@ -513,22 +529,26 @@ export default function GlobalRadioApp() {
 
   return (
     <div className="global-radio-app">
+      <a className="skip-link" href="#radio-main">
+        본문으로 건너뛰기
+      </a>
+
       <header className="global-radio-header">
-        <button className="radio-brand" type="button" onClick={() => setView('discover')}>
+        <button className="radio-brand" type="button" onClick={() => setView('discover')} aria-label="지구라디오 홈">
           <span aria-hidden="true">
             <Headphones size={22} />
           </span>
           <span>
             <strong>지구라디오</strong>
-            <small>좋은 소리부터 찾는 전세계 라디오</small>
+            <small>전세계 방송을 듣는 작은 콘솔</small>
           </span>
         </button>
-        <nav className="radio-nav" aria-label="지구라디오 화면">
+        <nav className="radio-nav" aria-label="주요 화면">
           <button className={view === 'discover' ? 'is-active' : ''} type="button" onClick={() => setView('discover')}>
-            검색
+            찾기
           </button>
           <button className={view === 'favorites' ? 'is-active' : ''} type="button" onClick={() => setView('favorites')}>
-            즐겨찾기
+            저장
           </button>
           <button className={view === 'recent' ? 'is-active' : ''} type="button" onClick={() => setView('recent')}>
             최근
@@ -540,26 +560,63 @@ export default function GlobalRadioApp() {
         </nav>
       </header>
 
-      <main className="global-radio-main">
-        <section className="radio-hero">
-          <div>
-            <h1>전세계 라디오를 품질 좋은 소스부터</h1>
-            <p>국가, 언어, 장르로 공개 인터넷 라디오를 찾고 직접 스트림, 현재 프로그램/곡명, 아침 알람까지 한 화면에서 관리합니다.</p>
+      <main id="radio-main" className="global-radio-main">
+        <section className="radio-hero" aria-labelledby="radio-title">
+          <div className="hero-copy">
+            <span className="hero-kicker">오늘의 라디오</span>
+            <h1 id="radio-title">지금 들을 방송을 고르세요</h1>
+            <p>국가와 장르를 고르면 품질 점수가 높은 공개 라디오부터 정리합니다. 마음에 드는 방송을 찾고 바로 들으세요.</p>
+            <div className="hero-actions">
+              <button className="radio-button primary" type="button" onClick={focusJapanBroadcasts}>
+                일본 방송 바로 보기
+              </button>
+              <button className="radio-button secondary" type="button" onClick={focusNowPlayingSupported}>
+                현재곡 지원 방송 찾기
+              </button>
+            </div>
           </div>
-          <div className="hero-quality-note">
-            <Sparkles aria-hidden="true" size={20} />
-            <strong>품질 기준</strong>
-            <span>codec / bitrate / HLS / HTTPS / 최근 검사 / SSL 오류</span>
-            <button className="radio-button primary hero-japan-button" type="button" onClick={focusJapanBroadcasts}>
-              일본 공중파·공개 FM 바로 보기
-            </button>
+
+          <div className="hero-status-strip" aria-label="현재 청취 상태">
+            <div className="hero-status-item">
+              <span aria-hidden="true">
+                <Globe2 aria-hidden="true" size={16} />
+              </span>
+              <div>
+                <strong>{displayedStations.length}개 방송</strong>
+                <small>{countryCount || 1}개 지역에서 검색 중</small>
+              </div>
+            </div>
+            <div className="hero-status-item">
+              <span aria-hidden="true">
+                <Music2 aria-hidden="true" size={16} />
+              </span>
+              <div>
+                <strong>{nowPlayingSummary}</strong>
+                <small>{currentPlaybackStation ? currentPlaybackStation.name : '방송을 선택하면 정보가 채워집니다'}</small>
+              </div>
+            </div>
+            <div className="hero-status-item">
+              <span aria-hidden="true">
+                <Clock3 aria-hidden="true" size={16} />
+              </span>
+              <div>
+                <strong>{alarmSummary}</strong>
+                <small>{currentQuality ? `품질 ${currentQuality.label} · ${currentQuality.score}점` : '알람과 품질 상태'}</small>
+              </div>
+            </div>
           </div>
         </section>
 
         {view === 'settings' ? (
           <div className="settings-layout">
             <section className="settings-panel">
-              <h2>설정</h2>
+              <div className="section-heading">
+                <div>
+                  <span>재생 환경</span>
+                  <h2>청취 설정</h2>
+                </div>
+                <Gauge aria-hidden="true" size={22} />
+              </div>
               <label className="setting-row">
                 <input
                   type="checkbox"
@@ -596,11 +653,11 @@ export default function GlobalRadioApp() {
               <div className="settings-actions">
                 <button className="radio-button secondary" type="button" onClick={clearRecent}>
                   <Trash2 aria-hidden="true" size={16} />
-                  최근 들은 방송 삭제
+                  최근 기록 비우기
                 </button>
                 <button className="radio-button secondary" type="button" onClick={clearFavorites}>
                   <Trash2 aria-hidden="true" size={16} />
-                  즐겨찾기 삭제
+                  저장 목록 비우기
                 </button>
               </div>
             </section>
@@ -609,7 +666,7 @@ export default function GlobalRadioApp() {
           </div>
         ) : (
           <div className="radio-workspace">
-            <section className="radio-list-panel">
+            <section className="radio-list-panel" aria-label="방송국 목록">
               {view === 'discover' ? (
                 <>
                   <SearchBar query={query} loading={loading} onQueryChange={setQuery} onSubmit={() => void loadStations(filters, query)} />
@@ -617,10 +674,10 @@ export default function GlobalRadioApp() {
                   {isJapanFocused ? (
                     <section className="japan-assurance-panel" aria-label="일본 방송 검증 기준">
                       <div>
-                        <strong>일본 방송 우선 검증 모드</strong>
+                        <strong>일본 방송 우선 검증</strong>
                         <p>
                           NHK WORLD-JAPAN은 공식 HTTPS HLS를 우선하고, Shonan Beach FM과 FM Kahoku는 공식 홈페이지와 스트림 응답을 확인한 공개 FM 후보로 보여줍니다.
-                          radiko 전용 주요 민방은 권역 제한 회피 없이 제외합니다.
+                          radiko 전용 주요 민방은 권역 제한 우회 없이 제외합니다.
                         </p>
                       </div>
                       <div className="japan-quick-actions">
@@ -637,7 +694,7 @@ export default function GlobalRadioApp() {
               ) : null}
               <div className="result-heading">
                 <div>
-                  <span>{view === 'discover' ? '지금 듣기 좋은 방송' : view === 'favorites' ? '즐겨찾기' : '최근 들은 방송'}</span>
+                  <span>{view === 'discover' ? '추천 후보' : view === 'favorites' ? '저장한 방송' : '최근 들은 방송'}</span>
                   <h2>{displayedStations.length}개 방송</h2>
                 </div>
                 {loading ? <Loader2 className="spin" aria-label="방송국을 찾고 있습니다" size={20} /> : <ShieldCheck aria-hidden="true" size={20} />}
@@ -645,7 +702,7 @@ export default function GlobalRadioApp() {
               {renderStationList()}
             </section>
 
-            <section className="player-column">
+            <section className="player-column" aria-label="재생 정보">
               <DirectAudioPlayer
                 audioRef={audioRef}
                 station={currentPlaybackStation}

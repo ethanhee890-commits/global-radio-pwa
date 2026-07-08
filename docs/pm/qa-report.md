@@ -11,7 +11,7 @@ tags:
   - now-playing
 ---
 
-# QA Report - 지구라디오 알람 및 현재곡 업데이트
+# QA Report - 지구라디오 알람, 현재곡 및 UI/UX 업데이트
 
 ## Scope
 
@@ -23,6 +23,9 @@ tags:
 - 깨진 한글 UI 문구 정리
 - 새 패널을 포함한 데스크톱 및 360px 모바일 레이아웃 정리
 - CSP에 `https://api.kexp.org`를 허용해 공식 now-playing API 호출 가능하게 수정
+- 앱 타이틀을 `지구라디오 - 지금 들을 방송을 고르세요`로 변경
+- 히어로 카피, CTA, 상태 스트립, 내비게이션 라벨을 청취 행동 중심으로 재정리
+- `Preferences`, `Morning Radio`, `Now Playing` 등 보이는 영어 보조 라벨을 한국어 톤으로 정리
 
 ## Automated Checks
 
@@ -51,6 +54,12 @@ tags:
   - now-playing panel visible
   - settings alarm panel visible
   - app console errors: none
+- UI/UX regression check with installed Chrome: PASS
+  - 676px viewport: title updated, hero height 278.8px, H1 34px / 40.12px line-height, hero CTA buttons 42px high, status text not clipped
+  - 360px viewport: title updated, hero height 248.97px, CTA buttons 306px x 42px, hero status strip hidden, horizontal overflow none
+  - 360px settings view: `설정` tab active, alarm panel width 336px, horizontal overflow none
+  - visible legacy English labels (`Preferences`, `Morning Radio`, `Now Playing`, `Listen smarter`): none
+  - console errors/warnings during UI check: none
 - KEXP now-playing browser check: PASS
   - provider: `KEXP 공개 API`
   - sample track loaded during QA: `Won't Wait`

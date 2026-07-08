@@ -26,8 +26,8 @@ export function NowPlayingPanel({
     <section className="now-playing-panel" aria-label="현재 재생 정보">
       <div className="section-heading">
         <div>
-          <span>Now Playing</span>
-          <h2>프로그램/곡명</h2>
+          <span>현재 방송</span>
+          <h2>흐르는 정보</h2>
         </div>
         <Music2 aria-hidden="true" size={22} />
       </div>

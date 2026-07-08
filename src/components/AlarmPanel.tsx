@@ -34,7 +34,7 @@ export function AlarmPanel({
     <section className="alarm-panel" aria-label="라디오 알람">
       <div className="section-heading">
         <div>
-          <span>Morning Radio</span>
+          <span>아침 라디오</span>
           <h2>라디오 알람</h2>
         </div>
         <AlarmClock aria-hidden="true" size={22} />
