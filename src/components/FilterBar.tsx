@@ -9,10 +9,20 @@ export type RadioFilters = {
 
 const COUNTRY_OPTIONS = [
   { label: '전체', value: '' },
-  { label: '한국', value: 'Korea' },
-  { label: '일본', value: 'Japan' },
-  { label: '미국', value: 'United States' },
-  { label: '영국', value: 'United Kingdom' }
+  { label: '일본', value: 'JP' },
+  { label: '한국', value: 'KR' },
+  { label: '미국', value: 'US' },
+  { label: '영국', value: 'GB' },
+  { label: '독일', value: 'DE' },
+  { label: '프랑스', value: 'FR' },
+  { label: '캐나다', value: 'CA' },
+  { label: '호주', value: 'AU' },
+  { label: '네덜란드', value: 'NL' },
+  { label: '브라질', value: 'BR' },
+  { label: '스페인', value: 'ES' },
+  { label: '이탈리아', value: 'IT' },
+  { label: '대만', value: 'TW' },
+  { label: '싱가포르', value: 'SG' }
 ];
 
 const LANGUAGE_OPTIONS = [
@@ -20,6 +30,10 @@ const LANGUAGE_OPTIONS = [
   { label: '한국어', value: 'korean' },
   { label: '영어', value: 'english' },
   { label: '일본어', value: 'japanese' },
+  { label: '독일어', value: 'german' },
+  { label: '프랑스어', value: 'french' },
+  { label: '스페인어', value: 'spanish' },
+  { label: '중국어', value: 'chinese' },
   { label: '음악 중심', value: 'instrumental' }
 ];
 
@@ -30,7 +44,9 @@ const GENRE_OPTIONS = [
   { label: 'NHK/뉴스', value: 'nhk' },
   { label: 'Jazz', value: 'jazz' },
   { label: 'News', value: 'news' },
-  { label: 'Lofi', value: 'lofi' },
+  { label: 'K-pop/J-pop', value: 'pop' },
+  { label: 'Classical', value: 'classical' },
+  { label: 'Rock', value: 'rock' },
   { label: 'Talk', value: 'talk' }
 ];
 
@@ -88,7 +104,7 @@ export function FilterBar({
           정렬
         </span>
         <select value={filters.sort} onChange={(event) => onChange({ ...filters, sort: event.target.value as RadioFilters['sort'] })}>
-          <option value="quality">품질순</option>
+          <option value="quality">음질순</option>
           <option value="popular">인기순</option>
           <option value="name">이름순</option>
         </select>

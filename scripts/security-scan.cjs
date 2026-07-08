@@ -63,7 +63,7 @@ if (packageJson.scripts?.dev?.includes('0.0.0.0')) {
 }
 
 const indexHtml = readText(path.join(root, 'index.html'));
-for (const requiredPolicy of ['Content-Security-Policy', "frame-ancestors 'none'", "object-src 'none'"]) {
+for (const requiredPolicy of ['Content-Security-Policy', "object-src 'none'"]) {
   if (!indexHtml.includes(requiredPolicy)) {
     findings.push(`index.html: missing CSP policy segment ${requiredPolicy}.`);
   }

@@ -32,9 +32,9 @@ const DEFAULT_FILTERS: RadioFilters = {
 };
 
 const JAPAN_PRIORITY_FILTERS: RadioFilters = {
-  country: 'Japan',
+  country: 'JP',
   language: 'japanese',
-  tag: 'japan-priority',
+  tag: '',
   sort: 'quality'
 };
 
@@ -76,7 +76,7 @@ export default function GlobalRadioApp() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const playbackTimerRef = useRef<number | null>(null);
   const [view, setView] = useState<ViewKey>('discover');
-  const [query, setQuery] = useState('jazz');
+  const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<RadioFilters>(DEFAULT_FILTERS);
   const [stations, setStations] = useState<RadioStation[]>([]);
   const [selectedStation, setSelectedStation] = useState<RadioStation | null>(null);
@@ -101,10 +101,12 @@ export default function GlobalRadioApp() {
   const isJapanFocused =
     view === 'discover' &&
     (filters.country === 'Japan' ||
+      filters.country === 'JP' ||
       filters.tag.includes('japan') ||
       filters.tag === 'terrestrial-fm' ||
       query.trim().toLowerCase().includes('japan') ||
       query.trim().toLowerCase().includes('nhk') ||
+      query.includes('일본') ||
       query.includes('일본') ||
       query.includes('日本'));
 
@@ -119,7 +121,7 @@ export default function GlobalRadioApp() {
           country: nextFilters.country,
           language: nextFilters.language,
           tag: nextFilters.tag,
-          limit: 80
+          limit: nextFilters.country === 'JP' ? 120 : 100
         });
         const sorted = sortStations(results, nextFilters.sort, nextSettings);
         setStations(sorted);
@@ -140,7 +142,7 @@ export default function GlobalRadioApp() {
   );
 
   useEffect(() => {
-    void loadStations(DEFAULT_FILTERS, 'jazz');
+    void loadStations(DEFAULT_FILTERS, '');
   }, [loadStations]);
 
   useEffect(() => {

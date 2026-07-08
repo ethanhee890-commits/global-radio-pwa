@@ -1,5 +1,4 @@
 import { ExternalLink, Heart, Play, Radio, Youtube } from 'lucide-react';
-import { useState } from 'react';
 import { getYouTubeAlternate } from '../data/youtubeAlternates.seed';
 import { scoreStationQuality } from '../lib/qualityScore';
 import type { RadioStation } from '../types/station';
@@ -36,7 +35,6 @@ export function StationCard({
   onToggleFavorite: (station: RadioStation) => void;
   onChooseYouTube: (station: RadioStation) => void;
 }) {
-  const [faviconFailed, setFaviconFailed] = useState(false);
   const quality = scoreStationQuality(station);
   const alternate = getYouTubeAlternate(station.stationuuid);
   const tags = getTagList(station.tags);
@@ -44,27 +42,14 @@ export function StationCard({
   return (
     <article className={`station-card ${active ? 'is-active' : ''}`}>
       <div className="station-card-main">
-        {station.favicon && !faviconFailed ? (
-          <img
-            src={station.favicon}
-            alt={`${station.name} 방송국 로고`}
-            onError={(event) => {
-              event.currentTarget.hidden = true;
-              setFaviconFailed(true);
-            }}
-          />
-        ) : (
-          <span className="station-avatar" aria-hidden="true">
-            {getStationInitial(station.name)}
-          </span>
-        )}
+        <span className="station-avatar" aria-hidden="true">
+          {getStationInitial(station.name)}
+        </span>
         <div>
           <button className="station-title-button" type="button" onClick={() => onSelect(station)}>
             <strong>{station.name}</strong>
           </button>
-          <p>
-            {[station.country, station.language].filter(Boolean).join(' · ') || '출처 정보 확인 필요'}
-          </p>
+          <p>{[station.country, station.language].filter(Boolean).join(' · ') || '출처 정보 확인 필요'}</p>
         </div>
       </div>
 
