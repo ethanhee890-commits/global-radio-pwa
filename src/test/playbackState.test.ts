@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isDirectPlaybackStalled, replaceStationById, replaceStoredStationById, withPlaybackCheckStatus } from '../lib/playbackState';
+import { isDirectPlaybackStalled, isStalePlaybackAttempt, replaceStationById, replaceStoredStationById, withPlaybackCheckStatus } from '../lib/playbackState';
 import { scoreStationQuality } from '../lib/qualityScore';
 import type { RadioStation, StoredStation } from '../types/station';
 
@@ -29,6 +29,11 @@ describe('playback state helpers', () => {
     expect(isDirectPlaybackStalled(1)).toBe(true);
     expect(isDirectPlaybackStalled(2)).toBe(false);
     expect(isDirectPlaybackStalled(4)).toBe(false);
+  });
+
+  it('detects stale playback attempts so late async results cannot overwrite the current player state', () => {
+    expect(isStalePlaybackAttempt(3, 2)).toBe(true);
+    expect(isStalePlaybackAttempt(3, 3)).toBe(false);
   });
 
   it('marks a locally failed stream as failed for quality scoring', () => {

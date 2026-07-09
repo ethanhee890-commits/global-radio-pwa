@@ -7,6 +7,10 @@ export function isDirectPlaybackStalled(readyState: number): boolean {
   return readyState < HAVE_CURRENT_DATA;
 }
 
+export function isStalePlaybackAttempt(currentAttemptId: number, attemptId: number): boolean {
+  return currentAttemptId !== attemptId;
+}
+
 export function withPlaybackCheckStatus(station: RadioStation, lastcheckok: 0 | 1): RadioStation {
   return {
     ...station,

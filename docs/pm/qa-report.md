@@ -180,3 +180,43 @@ tags:
 - iOS Safari 실기기 direct audio playback
 - 장시간 스트림 안정성
 - 실사용 환경의 블루투스/무음 모드/기기 볼륨 상태
+
+## 2026-07-10 Rapid Playback Switch Follow-up
+
+### Fixed
+
+- 첫 번째 방송의 `audio.play()` 결과가 늦게 실패한 뒤, 이미 사용자가 두 번째 방송을 선택했는데도 이전 실패가 현재 플레이어 상태를 `다시 시도하기` 또는 `브라우저 정책상 재생 버튼을 한 번 더 눌러주세요`로 덮어쓸 수 있는 비동기 경합을 수정했습니다.
+- 직접 재생, 일시정지, YouTube 전환마다 현재 재생 시도 번호를 갱신하고, 오래된 시도의 성공/실패/타임아웃은 현재 UI 상태를 변경하지 못하도록 했습니다.
+
+### Automated Checks
+
+- `npm.cmd run test -- playbackState`: PASS, 6 tests
+- `npm.cmd run verify`: PASS
+  - lint: PASS
+  - typecheck: PASS
+  - vitest: 13 files / 47 tests PASS
+  - build: PASS
+  - security scan: PASS
+- `npm.cmd audit --audit-level=moderate`: PASS, vulnerabilities 0
+- `npm.cmd run android:debug`: PASS, debug APK build successful
+
+### Rendered Browser QA
+
+- In-app Browser path: FAILED
+  - Browser runtime connection timed out after 120 seconds and reset.
+  - Fallback QA used Playwright with system Chrome.
+- Mobile 390px Chrome via Playwright/system Chrome: PASS
+  - Flow: first station play click -> second station play click -> first play rejects later with `AbortError`
+  - Current selected station remains `NHK WORLD-JAPAN Radio`
+  - Player remains in `연결 중` for the current station
+  - Stale autoplay warning: none
+  - Stale connection failure: none
+  - Horizontal overflow: none
+  - Bottom navigation widths equal: `86, 86, 86, 86`
+  - Search input padding left/right equal: `16px / 16px`
+  - Console warning/error: none
+  - Request failures: none
+
+### Not Checked
+
+- Real-device rapid switching while audio output is connected to Bluetooth or AirPlay

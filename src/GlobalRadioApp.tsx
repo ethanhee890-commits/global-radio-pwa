@@ -40,7 +40,7 @@ import { Toast, type ToastState } from './components/Toast';
 import './global-radio.css';
 import { getSafeNetworkUrl } from './lib/urlSafety';
 import { getPublicAssetUrl } from './lib/publicAssets';
-import { isDirectPlaybackStalled, replaceStationById, replaceStoredStationById, withPlaybackCheckStatus } from './lib/playbackState';
+import { isDirectPlaybackStalled, isStalePlaybackAttempt, replaceStationById, replaceStoredStationById, withPlaybackCheckStatus } from './lib/playbackState';
 
 type ViewKey = 'discover' | 'favorites' | 'recent' | 'settings';
 
@@ -285,6 +285,7 @@ export default function GlobalRadioApp() {
   const didInitialSearchRef = useRef(false);
   const filtersRef = useRef<RadioFilters>(DEFAULT_FILTERS);
   const playbackTimerRef = useRef<number | null>(null);
+  const playbackAttemptRef = useRef(0);
   const pendingPlaybackStationRef = useRef<RadioStation | null>(null);
   const activeStationRef = useRef<RadioStation | null>(null);
   const sheetDragRef = useRef<{ startY: number; pointerId: number } | null>(null);
@@ -708,6 +709,11 @@ export default function GlobalRadioApp() {
     }
   }
 
+  function invalidatePlaybackAttempt() {
+    playbackAttemptRef.current += 1;
+    clearPlaybackTimer();
+  }
+
   async function playDirect(station = selectedStation, skipPermissionPrompt = false) {
     if (!station) {
       return;
@@ -715,6 +721,7 @@ export default function GlobalRadioApp() {
 
     const streamUrl = getSafeNetworkUrl(station.url_resolved) || getSafeNetworkUrl(station.url);
     if (!streamUrl) {
+      invalidatePlaybackAttempt();
       setSelectedStation(station);
       setActiveStation(station);
       setActiveSourceType('radio');
@@ -729,7 +736,8 @@ export default function GlobalRadioApp() {
       return;
     }
 
-    clearPlaybackTimer();
+    invalidatePlaybackAttempt();
+    const attemptId = playbackAttemptRef.current;
     setSelectedStation(station);
     setActiveStation(station);
     setActiveSourceType('radio');
@@ -743,6 +751,9 @@ export default function GlobalRadioApp() {
       try {
         await ensureNotificationPermission();
         await playNativeRadio(station);
+        if (isStalePlaybackAttempt(playbackAttemptRef.current, attemptId)) {
+          return;
+        }
         setPlaybackStatus('loading');
         setPlayerSheetOpen(true);
         const startedStation = markStationPlaybackStarted(station);
@@ -750,6 +761,9 @@ export default function GlobalRadioApp() {
         setRecent(nextRecent);
         saveRecentStations(nextRecent);
       } catch {
+        if (isStalePlaybackAttempt(playbackAttemptRef.current, attemptId)) {
+          return;
+        }
         markStationPlaybackFailed(station);
         setPlaybackStatus('error');
         setPlaybackError('네이티브 라디오 재생을 시작하지 못했습니다. 다른 방송을 선택해 주세요.');
@@ -765,6 +779,10 @@ export default function GlobalRadioApp() {
     audio.load();
 
     playbackTimerRef.current = window.setTimeout(() => {
+      if (isStalePlaybackAttempt(playbackAttemptRef.current, attemptId)) {
+        return;
+      }
+
       if (audioRef.current && isDirectPlaybackStalled(audioRef.current.readyState)) {
         audioRef.current.pause();
         markStationPlaybackFailed(station);
@@ -775,6 +793,9 @@ export default function GlobalRadioApp() {
 
     try {
       await audio.play();
+      if (isStalePlaybackAttempt(playbackAttemptRef.current, attemptId)) {
+        return;
+      }
       clearPlaybackTimer();
       setPlaybackStatus('playing');
       const startedStation = markStationPlaybackStarted(station);
@@ -782,6 +803,9 @@ export default function GlobalRadioApp() {
       setRecent(nextRecent);
       saveRecentStations(nextRecent);
     } catch (error) {
+      if (isStalePlaybackAttempt(playbackAttemptRef.current, attemptId)) {
+        return;
+      }
       clearPlaybackTimer();
       const isAutoplayBlock = error instanceof DOMException && ['NotAllowedError', 'AbortError'].includes(error.name);
       if (!isAutoplayBlock) {
@@ -797,6 +821,7 @@ export default function GlobalRadioApp() {
   }
 
   async function pauseDirect() {
+    invalidatePlaybackAttempt();
     if (nativePlaybackEnabled) {
       try {
         await pauseNativeRadio();
@@ -816,6 +841,7 @@ export default function GlobalRadioApp() {
       return;
     }
 
+    invalidatePlaybackAttempt();
     audioRef.current?.pause();
     void stopNativeRadio();
     setSelectedStation(station);
