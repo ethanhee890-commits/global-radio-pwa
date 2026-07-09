@@ -2,25 +2,26 @@
   "name": "지구라디오",
   "short_name": "지구라디오",
   "description": "전세계 공개 인터넷 라디오를 좋은 음질의 채널부터 검색하고 재생합니다.",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0D0F14",
   "theme_color": "#0D0F14",
   "icons": [
     {
-      "src": "/icons/app-icon-192.png",
+      "src": "icons/app-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/app-icon-512.png",
+      "src": "icons/app-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/maskable-icon.png",
+      "src": "icons/maskable-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

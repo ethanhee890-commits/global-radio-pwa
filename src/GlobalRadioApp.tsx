@@ -39,6 +39,7 @@ import { PermissionPrompt, type PermissionPromptKind } from './components/Permis
 import { Toast, type ToastState } from './components/Toast';
 import './global-radio.css';
 import { getSafeNetworkUrl } from './lib/urlSafety';
+import { getPublicAssetUrl } from './lib/publicAssets';
 
 type ViewKey = 'discover' | 'favorites' | 'recent' | 'settings';
 
@@ -55,6 +56,8 @@ const JAPAN_PRIORITY_FILTERS: RadioFilters = {
   tag: 'japan-priority',
   sort: 'quality'
 };
+
+const appIconUrl = getPublicAssetUrl('icons/app-icon.png');
 
 type CountryAliasSet = {
   exact?: string[];
@@ -946,7 +949,7 @@ export default function GlobalRadioApp() {
       <header className="global-radio-header">
         <button className="radio-brand" type="button" onClick={() => setView('discover')}>
           <span className="brand-icon" aria-hidden="true">
-            <img src="/icons/app-icon.png" alt="" />
+            <img src={appIconUrl} alt="" />
           </span>
           <span>
             <strong>지구라디오</strong>
