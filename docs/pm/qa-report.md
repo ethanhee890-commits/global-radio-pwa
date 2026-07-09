@@ -352,3 +352,61 @@ tags:
 - iOS Safari physical-device direct stream playback
 - Android/iOS native package smoke test after this web-layer patch
 - Long-running stream stability across multiple stations
+
+## 2026-07-10 Stateful Mobile QA Follow-up
+
+### Fixed
+
+- Web alarm helper copy now stays scoped to the web environment. It no longer mixes Android and iOS instructions into the web settings screen.
+- Saved and recent tabs now render their local lists immediately even while the discover station search is loading. The search loading skeleton and spinner are limited to the Home/discover results list.
+
+### Automated Checks
+
+- `npm.cmd run test -- globalRadioAlarmSettings`: PASS, 1 file / 3 tests
+- `npm.cmd run verify`: PASS
+  - lint: PASS
+  - typecheck: PASS
+  - Vitest: PASS, 15 files / 51 tests
+  - production build: PASS
+  - security scan: PASS
+- `npm.cmd run android:debug`: PASS, debug APK build completed with latest web assets
+
+### Rendered Browser QA
+
+- In-app Browser path: FAILED
+  - Browser runtime connection previously timed out after 120 seconds and reset.
+  - Fallback QA used Playwright with system Chrome.
+- Mobile 390px and 360px Chrome via Playwright/system Chrome: PASS
+  - Page identity: `지구라디오`
+  - Framework error overlay: none
+  - Console warning/error: none
+  - Page errors: none
+  - Unexpected failed requests: none
+  - Horizontal overflow: none at 390px and 360px
+  - Bottom navigation widths equal at 390px and 360px
+  - Saved tab does not show in-page direct player or station detail panel
+  - Saved tab seeded favorite renders while discover search can still be loading
+  - Saved tab `전체 삭제` empties UI and `global-radio-pwa:favorites:v1`
+  - Recent tab does not show in-page direct player or station detail panel
+  - Recent tab individual delete empties UI and `global-radio-pwa:recent:v1`
+  - Recent tab `전체 삭제` empties UI and `global-radio-pwa:recent:v1`
+  - Web alarm copy does not mention Android or iOS
+  - Alarm hour/minute input values `03` and `07` normalize to `3` and `7`
+  - Global genre options do not expose Japan-only values
+  - Japan country selection exposes Japan-only genre options: `일본 추천`, `공개 FM`, `NHK/뉴스`
+
+### Evidence
+
+- `C:\Users\rooki\AppData\Local\Temp\global-radio-qa-continuation-3\saved-seeded-390.png`
+- `C:\Users\rooki\AppData\Local\Temp\global-radio-qa-continuation-3\recent-seeded-390.png`
+- `C:\Users\rooki\AppData\Local\Temp\global-radio-qa-continuation-3\settings-390.png`
+- `C:\Users\rooki\AppData\Local\Temp\global-radio-qa-continuation-3\home-filters-390.png`
+- `C:\Users\rooki\AppData\Local\Temp\global-radio-qa-continuation-3\home-filters-360.png`
+
+### Not Checked
+
+- iOS Safari physical-device direct stream playback
+- Android/iOS native app smoke test on physical devices after this web-layer patch
+- Real Android exact alarm permission screen behavior
+- Real scheduled alarm playback at wall-clock time on Android
+- Long-running stream stability across multiple stations

@@ -278,7 +278,7 @@ function getAlarmHelperCopy(platform: string): string {
     return '설정한 시간에 알림을 보내드려요. 알림을 탭한 뒤 앱에서 선택한 방송을 재생해 주세요.';
   }
 
-  return '웹에서는 알람 예약을 지원하지 않아요. 알람은 Android 또는 iOS 앱에서 설정해 주세요.';
+  return '웹에서는 지정 시간 자동 재생 알람을 지원하지 않아요. 앱에서 설정해 주세요.';
 }
 
 export default function GlobalRadioApp() {
@@ -944,7 +944,7 @@ export default function GlobalRadioApp() {
   }
 
   function renderStationList() {
-    if (loading) {
+    if (view === 'discover' && loading) {
       return (
         <div className="station-list" aria-label="로딩 중">
           {Array.from({ length: 5 }, (_, index) => (
@@ -1185,7 +1185,7 @@ export default function GlobalRadioApp() {
                   <h2>{displayedStations.length}개 방송</h2>
                 </div>
                 <div className="result-heading-actions">
-                  {loading ? <Loader2 className="spin" aria-label="방송국을 찾고 있어요." size={20} /> : null}
+                  {view === 'discover' && loading ? <Loader2 className="spin" aria-label="방송국을 찾고 있어요." size={20} /> : null}
                   {view === 'recent' && displayedStations.length > 0 ? (
                     <button className="result-text-action danger" type="button" onClick={clearRecent}>
                       전체 삭제

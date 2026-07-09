@@ -4,7 +4,7 @@ import { __globalRadioTestHooks } from '../GlobalRadioApp';
 describe('global radio alarm settings', () => {
   it('keeps alarm helper copy scoped to the current platform', () => {
     expect(__globalRadioTestHooks.getAlarmHelperCopy('web')).toBe(
-      '웹에서는 알람 예약을 지원하지 않아요. 알람은 Android 또는 iOS 앱에서 설정해 주세요.'
+      '웹에서는 지정 시간 자동 재생 알람을 지원하지 않아요. 앱에서 설정해 주세요.'
     );
     expect(__globalRadioTestHooks.getAlarmHelperCopy('android')).toBe(
       '권한을 허용하면 설정한 시간에 선택한 방송이 자동으로 재생됩니다.'
