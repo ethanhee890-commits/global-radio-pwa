@@ -35,7 +35,7 @@ tags:
 | Key | Copy |
 |---|---|
 | hero.title | 좋은 음질로 듣는 전세계 라디오 |
-| hero.subtitle | 국가, 언어, 장르별 인터넷 라디오를 품질 좋은 소스부터 찾아드려요. |
+| hero.subtitle | 국가, 언어, 장르별 인터넷 라디오를 좋은 음질의 채널부터 찾아드려요. |
 | section.recommended | 지금 듣기 좋은 방송 |
 | section.countries | 국가별 탐색 |
 | section.genres | 장르별 탐색 |
@@ -89,10 +89,10 @@ tags:
 | Key | Copy |
 |---|---|
 | error.stationList | 방송국 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요. |
-| error.playback | 이 라디오 스트림은 지금 재생할 수 없어요. 다른 소스를 시도해 주세요. |
+| error.playback | 이 라디오 방송은 지금 재생할 수 없어요. 다른 재생 방법을 시도해 주세요. |
 | error.autoplay | 브라우저 정책상 재생 버튼을 한 번 더 눌러주세요. |
 | error.youtubeLoad | YouTube 플레이어를 불러오지 못했어요. 네트워크 상태를 확인해 주세요. |
-| error.noAlternate | 아직 검증된 대체 소스가 없어요. |
+| error.noAlternate | 아직 확인된 공식 YouTube 방송이 없어요. |
 
 ## Success Messages
 

@@ -1,6 +1,6 @@
 {
   "name": "global-radio-pwa",
-  "description": "전세계 공개 인터넷 라디오를 품질 좋은 소스부터 검색하고 재생하는 모바일 PWA",
+  "description": "전세계 공개 인터넷 라디오를 좋은 음질의 채널부터 검색하고 재생하는 모바일 PWA",
   "version": "0.1.0",
   "private": true,
   "type": "module",

@@ -483,3 +483,46 @@ tags:
 - iOS Safari physical-device direct stream playback
 - iOS native archive/signing and physical-device smoke test
 - Long-running stream stability across multiple stations
+
+## 2026-07-10 PWA Manifest and Copy QA Follow-up
+
+### Fixed
+
+- Legacy `public/manifest.webmanifest` now uses relative `start_url`, `scope`, and icon paths. This matches `public-radio/manifest.webmanifest` and prevents root-path icon/install breakage when the app is served from a GitHub Pages subdirectory.
+- Package metadata and design copydeck now avoid the user-facing term "소스" and use "좋은 음질의 채널", "다른 재생 방법", and "공식 YouTube 방송" instead.
+- `publicAssets` regression coverage now checks both `public/manifest.webmanifest` and `public-radio/manifest.webmanifest`, so root-path manifest regressions are caught by automated tests.
+
+### Automated Checks
+
+- UTF-8 suspicious character scan across source/docs/config text files: PASS, 0 suspicious replacement or CJK compatibility mojibake characters
+- `npm.cmd run verify`: PASS
+  - lint: PASS
+  - typecheck: PASS
+  - Vitest: PASS, 15 files / 51 tests
+  - production build: PASS
+  - security scan: PASS
+- `npm.cmd audit --audit-level=moderate`: PASS, 0 vulnerabilities
+- `npm.cmd run android:debug`: PASS, debug APK build completed with latest web assets
+
+### Rendered Browser QA
+
+- In-app Browser path: BLOCKED
+  - Browser runtime connected, but local `127.0.0.1:5179` navigation/reload was blocked by the Browser URL policy.
+  - No alternate browser workaround was used after that policy block.
+
+### Evidence
+
+- Latest local debug APK: `release\global-radio-android-2026-07-10-qa6\jigu-radio-debug-2026-07-10-qa6.apk`
+- Latest local debug ZIP: `release\global-radio-android-2026-07-10-qa6\jigu-radio-debug-2026-07-10-qa6.zip`
+- APK SHA-256: `89A537B0AE7FE254042EC6AC7285CF82C7045982B2407174072BABB2DA5915EC`
+
+### Not Checked
+
+- 360px/390px rendered mobile screenshots for this exact patch, because Browser URL policy blocked local app navigation/reload and no workaround was used
+- Android emulator or physical-device install/launch smoke test, because no device/emulator was connected
+- Real Android notification tray rendering
+- Real Android exact alarm permission screen behavior
+- Real scheduled alarm playback at wall-clock time on Android
+- iOS Safari physical-device direct stream playback
+- iOS native archive/signing and physical-device smoke test
+- Long-running stream stability across multiple stations

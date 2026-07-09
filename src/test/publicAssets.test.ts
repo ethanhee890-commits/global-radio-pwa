@@ -10,15 +10,19 @@ describe('public asset paths', () => {
   });
 
   it('keeps PWA manifest paths relative for GitHub Pages subdirectory installs', () => {
-    const manifest = JSON.parse(readFileSync(resolve('public-radio/manifest.webmanifest'), 'utf8')) as {
-      start_url: string;
-      scope: string;
-      icons: Array<{ src: string }>;
-    };
+    const manifestPaths = ['public/manifest.webmanifest', 'public-radio/manifest.webmanifest'];
 
-    expect(manifest.start_url).toBe('./');
-    expect(manifest.scope).toBe('./');
-    expect(manifest.icons.every((icon) => !icon.src.startsWith('/'))).toBe(true);
+    manifestPaths.forEach((manifestPath) => {
+      const manifest = JSON.parse(readFileSync(resolve(manifestPath), 'utf8')) as {
+        start_url: string;
+        scope: string;
+        icons: Array<{ src: string }>;
+      };
+
+      expect(manifest.start_url).toBe('./');
+      expect(manifest.scope).toBe('./');
+      expect(manifest.icons.every((icon) => !icon.src.startsWith('/'))).toBe(true);
+    });
   });
 
   it('does not hard-code root icon paths in the app shell', () => {
