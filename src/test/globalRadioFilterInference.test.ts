@@ -69,4 +69,10 @@ describe('global radio search and filter relationship', () => {
     expect(__globalRadioTestHooks.getQueryAfterFilterChange('japan', countries, currentFilters, nextFilters)).toBe('');
     expect(__globalRadioTestHooks.getQueryAfterFilterChange('japan', countries, currentFilters, currentFilters)).toBe('japan');
   });
+
+  it('does not show zero stations while the discover list is still loading', () => {
+    expect(__globalRadioTestHooks.getResultCountLabel('discover', true, 0)).toBe('검색 중');
+    expect(__globalRadioTestHooks.getResultCountLabel('discover', false, 0)).toBe('0개 방송');
+    expect(__globalRadioTestHooks.getResultCountLabel('recent', true, 0)).toBe('0개 방송');
+  });
 });

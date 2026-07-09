@@ -5,6 +5,7 @@ dist/
 .codex-remote-attachments/
 .tools/
 .playwright-cli/
+.gradle-user-home/
 artifacts/
 output/
 test-results/

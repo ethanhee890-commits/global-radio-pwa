@@ -568,3 +568,59 @@ tags:
 - iOS Safari physical-device direct stream playback
 - iOS native archive/signing and physical-device smoke test
 - Long-running stream stability across multiple stations
+
+## 2026-07-10 Mobile Render QA Follow-up
+
+### Fixed
+
+- The discover result count no longer says `0개 방송` while the first station request is still loading. It now shows `검색 중` until a real empty result or station list is available.
+- Added regression coverage for the result-count label so loading and true empty states stay distinct.
+
+### Rendered Browser QA
+
+- Public URL checked: `https://ethanhee890-commits.github.io/global-radio-pwa/`
+- Browser path: PASS on public deployment URL
+- 390px viewport:
+  - Page title: `지구라디오`
+  - Horizontal overflow: PASS, `scrollWidth` equals `clientWidth`
+  - Search input, search button, country/language/genre/sort controls: PASS, no overlap
+  - Bottom navigation button widths: visually consistent
+  - Console warnings/errors: PASS, none captured
+- 360px viewport:
+  - Horizontal overflow: PASS, `scrollWidth` equals `clientWidth`
+  - Search input and country filter overlap: PASS, no overlap
+  - Bottom navigation button widths: PASS, all four buttons measured `74.75px`
+  - Console warnings/errors: PASS, none captured
+- 360px `japan` search interaction:
+  - Search input accepted `japan`
+  - Country filter auto-aligned to `Japan (JP) · 203`
+  - Language and genre remained `전체`
+  - Result cards showed Japan stations
+  - Horizontal overflow: PASS
+  - Search/country overlap: PASS, no overlap
+
+### Automated Checks
+
+- `npm.cmd run test -- globalRadioFilterInference filterBarOptions globalRadioCssRegression`: PASS, 4 files / 14 tests
+- `npm.cmd run verify`: PASS
+  - lint: PASS
+  - typecheck: PASS
+  - Vitest: PASS, 15 files / 52 tests
+  - production build: PASS
+  - security scan: PASS
+- `npm.cmd audit --audit-level=moderate`: PASS, 0 vulnerabilities
+- `npm.cmd run android:debug`: PASS after isolating `GRADLE_USER_HOME` to a local `.gradle-user-home` cache. The first Android attempt failed because the shared Gradle cache at `D:\Projects\CodexProjects\_global-data\.gradle` had unreadable transform metadata, not because of source code.
+
+### Evidence
+
+- Latest local debug APK: `release\global-radio-android-2026-07-10-qa8\jigu-radio-debug-2026-07-10-qa8.apk`
+- Latest local debug ZIP: `release\global-radio-android-2026-07-10-qa8\jigu-radio-debug-2026-07-10-qa8.zip`
+- APK SHA-256: `7A96642FB98D65F7B017772E60F3574959E6CA355F6516890E3A1AF1A1E887B3`
+- ZIP SHA-256: `A247E0543138D6922A96B0093DC420F5AC7D427AC6127C69415925B8F63E91E8`
+
+### Not Checked
+
+- Real direct-stream audio success rate on physical Android/iOS devices
+- Real Android exact alarm behavior at wall-clock time
+- iOS native archive/signing and physical-device smoke test
+- Long-running stream stability across multiple stations

@@ -212,12 +212,21 @@ function getQueryAfterFilterChange(query: string, countries: RadioBrowserFilterO
   return query;
 }
 
+function getResultCountLabel(view: ViewKey, loading: boolean, count: number): string {
+  if (view === 'discover' && loading && count === 0) {
+    return '검색 중';
+  }
+
+  return `${count}개 방송`;
+}
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const __globalRadioTestHooks = {
   inferCountryFromQuery,
   alignFiltersWithQuery,
   getStationSearchQuery,
   getQueryAfterFilterChange,
+  getResultCountLabel,
   clampTimePart,
   formatAlarmTime,
   getAlarmHelperCopy
@@ -1182,7 +1191,7 @@ export default function GlobalRadioApp() {
               <div className="result-heading">
                 <div>
                   <span>{view === 'discover' ? '지금 듣기 좋은 방송' : view === 'favorites' ? '즐겨찾기' : '최근 들은 방송'}</span>
-                  <h2>{displayedStations.length}개 방송</h2>
+                  <h2>{getResultCountLabel(view, loading, displayedStations.length)}</h2>
                 </div>
                 <div className="result-heading-actions">
                   {view === 'discover' && loading ? <Loader2 className="spin" aria-label="방송국을 찾고 있어요." size={20} /> : null}
