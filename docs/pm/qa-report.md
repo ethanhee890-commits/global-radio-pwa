@@ -220,3 +220,41 @@ tags:
 ### Not Checked
 
 - Real-device rapid switching while audio output is connected to Bluetooth or AirPlay
+
+## 2026-07-10 Storage Failure Follow-up
+
+### Fixed
+
+- 브라우저 또는 WebView에서 `localStorage.setItem`이 저장공간 제한, 비공개 모드, 보안 정책 등으로 실패하면 즐겨찾기/최근/설정 저장 중 앱이 런타임 오류로 멈출 수 있는 문제를 수정했습니다.
+- 저장소 쓰기 실패는 앱 조작을 막지 않도록 흡수하고, 메모리 상태는 유지해 사용자가 현재 세션에서 저장/해제/설정 조작을 계속할 수 있게 했습니다.
+
+### Automated Checks
+
+- `npm.cmd run test -- globalRadioStorage`: PASS, 1 test
+- `npm.cmd run verify`: PASS
+  - lint: PASS
+  - typecheck: PASS
+  - vitest: 14 files / 48 tests PASS
+  - build: PASS
+  - security scan: PASS
+- `npm.cmd audit --audit-level=moderate`: PASS, vulnerabilities 0
+- `npm.cmd run android:debug`: PASS, debug APK build successful
+
+### Rendered Browser QA
+
+- In-app Browser path: FAILED
+  - Browser runtime connection timed out after 120 seconds and reset.
+  - Fallback QA used Playwright with system Chrome.
+- Mobile 390px Chrome via Playwright/system Chrome: PASS
+  - Flow: app load -> force `localStorage.setItem` to throw `QuotaExceededError` -> tap first station favorite button
+  - Favorite button changes to `저장됨`
+  - Page errors: none
+  - Console warning/error: none
+  - Framework error overlay: none
+  - Horizontal overflow: none
+  - Bottom navigation widths equal: `86, 86, 86, 86`
+  - Search input padding left/right equal: `16px / 16px`
+
+### Not Checked
+
+- Long-term persistence when the browser permanently denies storage writes; current session remains usable, but denied storage cannot be persisted by design.

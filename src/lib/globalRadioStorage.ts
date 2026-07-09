@@ -32,7 +32,11 @@ function readJson<T>(key: string, fallback: T): T {
 }
 
 function writeJson<T>(key: string, value: T): void {
-  window.localStorage.setItem(key, JSON.stringify(value));
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Storage can be unavailable or quota-limited in some mobile/private browsing contexts.
+  }
 }
 
 export function toStoredStation(station: RadioStation): StoredStation {
