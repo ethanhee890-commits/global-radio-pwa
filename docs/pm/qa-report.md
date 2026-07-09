@@ -916,6 +916,11 @@ tags:
   - Search input and country filter overlap: no
   - Horizontal overflow: none
   - Console warning/error: none
+- Filter relationship QA:
+  - Country `전체` with genre menu open does not expose Japan-only options: yes
+  - Country `Japan (JP)` exposes `일본 추천`, `공개 FM`, and `NHK/뉴스`: yes
+  - Switching country back to `전체` after choosing `일본 추천` resets genre to `전체`: yes
+  - Horizontal overflow during filter menu checks: none
 
 ### Package Evidence
 
