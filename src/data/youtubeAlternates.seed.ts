@@ -27,13 +27,13 @@ export const YOUTUBE_ALTERNATES_SEED: YouTubeAlternateSource[] = [
     id: 'yt-mbc-radio-official',
     stationuuid: 'alias-mbc-fm4u',
     stationNameAliases: ['MBC FM4U', 'MBC FM4U 91.9', 'MBC FM4U Seoul'],
-    type: 'youtube_channel',
-    youtubeChannelId: 'UCKNZsAeQXpvI-Mpoc0ZKhsA',
+    type: 'youtube_video',
+    youtubeVideoId: '-icaXPo67uE',
     label: 'MBC Radio 공식 YouTube',
     verificationStatus: 'verified',
     verificationMethod: 'manual_seed',
-    sourceUrl: 'https://www.youtube.com/@radiombc',
-    note: 'MBC Radio 공식 YouTube 채널(@radiombc)입니다. 직접 라디오 재생 실패 시 visible iframe으로만 제공합니다.'
+    sourceUrl: 'https://www.youtube.com/watch?v=-icaXPo67uE',
+    note: '2026-07-10 기준 MBC Radio 공식 채널(@radiombc)의 현재 공개 라이브 영상으로 확인했습니다. 채널 live_stream embed가 불안정해 실제 영상 ID를 visible iframe으로만 제공합니다.'
   }
 ];
 

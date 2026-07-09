@@ -125,7 +125,7 @@ describe('YouTube fallback UI boundaries', () => {
 
     expect(markup).toContain('<iframe');
     expect(markup).toContain('class="youtube-frame"');
-    expect(markup).toContain('https://www.youtube.com/embed/live_stream?channel=UCKNZsAeQXpvI-Mpoc0ZKhsA');
+    expect(markup).toContain('https://www.youtube.com/embed/-icaXPo67uE?rel=0');
     expect(markup).not.toContain('display:none');
     expect(markup).not.toContain('visibility:hidden');
   });

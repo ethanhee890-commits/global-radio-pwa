@@ -59,7 +59,8 @@ describe('getPreferredSource', () => {
     });
 
     expect(alternate?.id).toBe('yt-mbc-radio-official');
-    expect(alternate?.youtubeChannelId).toBe('UCKNZsAeQXpvI-Mpoc0ZKhsA');
+    expect(alternate?.type).toBe('youtube_video');
+    expect(alternate?.youtubeVideoId).toBe('-icaXPo67uE');
   });
 
   it('does not offer the visible YouTube player while a direct stream is still good', () => {
