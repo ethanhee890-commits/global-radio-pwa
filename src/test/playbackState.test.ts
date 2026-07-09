@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { replaceStationById, replaceStoredStationById, withPlaybackCheckStatus } from '../lib/playbackState';
+import { isDirectPlaybackStalled, replaceStationById, replaceStoredStationById, withPlaybackCheckStatus } from '../lib/playbackState';
 import { scoreStationQuality } from '../lib/qualityScore';
 import type { RadioStation, StoredStation } from '../types/station';
 
@@ -24,6 +24,13 @@ const otherStation: RadioStation = {
 };
 
 describe('playback state helpers', () => {
+  it('treats a direct stream as stalled until current media data is available', () => {
+    expect(isDirectPlaybackStalled(0)).toBe(true);
+    expect(isDirectPlaybackStalled(1)).toBe(true);
+    expect(isDirectPlaybackStalled(2)).toBe(false);
+    expect(isDirectPlaybackStalled(4)).toBe(false);
+  });
+
   it('marks a locally failed stream as failed for quality scoring', () => {
     const failedStation = withPlaybackCheckStatus(goodStation, 0);
 

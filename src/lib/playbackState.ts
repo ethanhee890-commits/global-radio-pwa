@@ -1,6 +1,12 @@
 import type { RadioStation, StoredStation } from '../types/station';
 import { toStoredStation } from './globalRadioStorage';
 
+const HAVE_CURRENT_DATA = 2;
+
+export function isDirectPlaybackStalled(readyState: number): boolean {
+  return readyState < HAVE_CURRENT_DATA;
+}
+
 export function withPlaybackCheckStatus(station: RadioStation, lastcheckok: 0 | 1): RadioStation {
   return {
     ...station,

@@ -144,3 +144,39 @@ tags:
 
 - Mobile home: `C:\Users\rooki\AppData\Local\Temp\global-radio-qa\mobile-home-390.png`
 - Visible YouTube iframe: `C:\Users\rooki\AppData\Local\Temp\global-radio-qa\mobile-youtube-iframe-visible-390.png`
+
+## 2026-07-10 Playback Stall Follow-up
+
+### Fixed
+
+- 이전 방송이 재생 중인 상태에서 새 방송 스트림이 연결만 걸리고 실제 미디어 데이터를 받지 못하면, 오래된 `playing` 상태 때문에 실패 타임아웃이 건너뛰어질 수 있는 문제를 수정했습니다.
+- 직접 스트림은 현재 오디오 요소의 `readyState`가 재생 가능한 데이터 단계에 도달했는지만 기준으로 멈춤 여부를 판단하도록 분리했습니다.
+- 재생 버튼을 눌렀는데 소리가 나지 않고 연결이 오래 걸리는 경우, 일정 시간이 지나면 `연결 실패`와 `다시 시도하기` 상태로 명확히 바뀌도록 했습니다.
+
+### Automated Checks
+
+- `npm.cmd run test -- playbackState`: PASS, 5 tests
+- `npm.cmd run verify`: PASS
+  - lint: PASS
+  - typecheck: PASS
+  - vitest: 13 files / 46 tests PASS
+  - build: PASS
+  - security scan: PASS
+- `npm.cmd audit --audit-level=moderate`: PASS, vulnerabilities 0
+
+### Rendered Browser QA
+
+- Mobile 390px Chrome via Playwright/system Chrome: PASS
+  - Station cards render: 168 cards
+  - Horizontal overflow: none
+  - Search input padding left/right equal: `16px / 16px`
+  - Search input and country filter do not overlap
+  - Bottom navigation widths equal: `86, 86, 86, 86`
+  - Console warning/error: none
+  - Request failures: none
+
+### Not Checked
+
+- iOS Safari 실기기 direct audio playback
+- 장시간 스트림 안정성
+- 실사용 환경의 블루투스/무음 모드/기기 볼륨 상태

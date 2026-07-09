@@ -40,7 +40,7 @@ import { Toast, type ToastState } from './components/Toast';
 import './global-radio.css';
 import { getSafeNetworkUrl } from './lib/urlSafety';
 import { getPublicAssetUrl } from './lib/publicAssets';
-import { replaceStationById, replaceStoredStationById, withPlaybackCheckStatus } from './lib/playbackState';
+import { isDirectPlaybackStalled, replaceStationById, replaceStoredStationById, withPlaybackCheckStatus } from './lib/playbackState';
 
 type ViewKey = 'discover' | 'favorites' | 'recent' | 'settings';
 
@@ -765,7 +765,7 @@ export default function GlobalRadioApp() {
     audio.load();
 
     playbackTimerRef.current = window.setTimeout(() => {
-      if (audioRef.current && audioRef.current.readyState < 2 && playbackStatus !== 'playing') {
+      if (audioRef.current && isDirectPlaybackStalled(audioRef.current.readyState)) {
         audioRef.current.pause();
         markStationPlaybackFailed(station);
         setPlaybackStatus('error');
