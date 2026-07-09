@@ -25,6 +25,11 @@ public final class NativeRadioAlarmScheduler {
     }
 
     public static boolean saveAndSchedule(Context context, int hour, int minute, String url, String title, String subtitle) {
+        if (!canScheduleExactAlarms(context)) {
+            cancel(context);
+            return false;
+        }
+
         SharedPreferences.Editor editor = prefs(context).edit();
         editor.putBoolean(KEY_ENABLED, true);
         editor.putInt(KEY_HOUR, hour);
@@ -33,7 +38,12 @@ public final class NativeRadioAlarmScheduler {
         editor.putString(KEY_TITLE, title);
         editor.putString(KEY_SUBTITLE, subtitle);
         editor.apply();
-        return scheduleStored(context);
+
+        boolean scheduled = scheduleStored(context);
+        if (!scheduled) {
+            cancel(context);
+        }
+        return scheduled;
     }
 
     public static boolean scheduleStored(Context context) {

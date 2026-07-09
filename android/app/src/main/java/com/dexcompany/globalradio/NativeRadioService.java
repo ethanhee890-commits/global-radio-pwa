@@ -37,6 +37,7 @@ public class NativeRadioService extends Service {
     private MediaPlayer player;
     private AudioManager audioManager;
     private AudioFocusRequest focusRequest;
+    private AudioManager.OnAudioFocusChangeListener focusChangeListener;
 
     public static Intent playIntent(Context context, String url, String title, String subtitle, boolean fromAlarm) {
         Intent intent = new Intent(context, NativeRadioService.class);
@@ -169,6 +170,8 @@ public class NativeRadioService extends Service {
     private void stopPlayback() {
         status = "idle";
         currentUrl = "";
+        currentTitle = "";
+        currentSubtitle = "";
         releasePlayer();
         abandonAudioFocus();
         stopForeground(true);
@@ -192,7 +195,7 @@ public class NativeRadioService extends Service {
             return true;
         }
 
-        AudioManager.OnAudioFocusChangeListener listener = focusChange -> {
+        focusChangeListener = focusChange -> {
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                 pausePlayback();
             }
@@ -204,12 +207,12 @@ public class NativeRadioService extends Service {
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                     .build())
-                .setOnAudioFocusChangeListener(listener)
+                .setOnAudioFocusChangeListener(focusChangeListener)
                 .build();
             return audioManager.requestAudioFocus(focusRequest) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
         }
 
-        return audioManager.requestAudioFocus(listener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+        return audioManager.requestAudioFocus(focusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
             == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
 
@@ -221,7 +224,10 @@ public class NativeRadioService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && focusRequest != null) {
             audioManager.abandonAudioFocusRequest(focusRequest);
             focusRequest = null;
+        } else if (focusChangeListener != null) {
+            audioManager.abandonAudioFocus(focusChangeListener);
         }
+        focusChangeListener = null;
     }
 
     private void updateNotification(String statusText) {

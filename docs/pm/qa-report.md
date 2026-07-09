@@ -410,3 +410,41 @@ tags:
 - Real Android exact alarm permission screen behavior
 - Real scheduled alarm playback at wall-clock time on Android
 - Long-running stream stability across multiple stations
+
+## 2026-07-10 Android Native QA Follow-up
+
+### Fixed
+
+- Android exact alarm scheduling no longer leaves native `SharedPreferences` with `enabled=true` when exact alarm permission is unavailable or native scheduling fails. Failed scheduling now clears the native alarm state so later `getAlarm()`, boot recovery, and receiver behavior do not report or restore a stale alarm.
+- Android radio playback now retains and abandons the audio focus listener on pre-Android 8 devices as well as Android 8+. This prevents old audio-focus listeners from remaining registered after pause/stop on the supported `minSdkVersion 24` range.
+- Native stop now clears the cached current title and subtitle with the stream URL, so `getStatus()` cannot expose stale station metadata after playback is stopped.
+
+### Automated Checks
+
+- Android execution environment check:
+  - `adb` is not on PATH, but SDK adb exists at `D:\Projects\CodexProjects\_global-sdk\Android\Sdk\platform-tools\adb.exe` and `C:\Users\rooki\AppData\Local\Android\Sdk\platform-tools\adb.exe`
+  - `adb devices`: PASS command execution, but no connected device/emulator was available
+  - emulator binary/package: not available in the current SDK
+- `$env:JAVA_HOME='D:\Program Files\Android\Android Studio\jbr'; .\gradlew.bat :app:compileDebugJavaWithJavac --console=plain`: PASS
+- `$env:JAVA_HOME='D:\Program Files\Android\Android Studio\jbr'; .\gradlew.bat :app:testDebugUnitTest --console=plain`: PASS
+- `$env:JAVA_HOME='D:\Program Files\Android\Android Studio\jbr'; .\gradlew.bat :app:lintDebug --console=plain`: PASS
+  - `lint-results-debug.xml` contained no `<issue>` entries
+- `npm.cmd run verify`: PASS
+  - lint, typecheck, Vitest, production build, and security scan all passed
+- `npm.cmd audit --audit-level=moderate`: PASS, 0 vulnerabilities
+- `npm.cmd run android:debug`: PASS, debug APK build completed with latest native code
+
+### Evidence
+
+- Latest local debug APK: `release\global-radio-android-2026-07-10-qa4\jigu-radio-debug-2026-07-10-qa4.apk`
+- Latest local debug ZIP: `release\global-radio-android-2026-07-10-qa4\jigu-radio-debug-2026-07-10-qa4.zip`
+- APK SHA-256: `10D391BA2F8D81C5EAF348DAE46F1C324D1C2A9A9715246D113E7D479E7B8C95`
+
+### Not Checked
+
+- Android emulator or physical-device install/launch smoke test, because no device/emulator was connected and the SDK does not currently include the emulator package
+- Real Android exact alarm permission screen behavior
+- Real scheduled alarm playback at wall-clock time on Android
+- iOS Safari physical-device direct stream playback
+- iOS native archive/signing and physical-device smoke test
+- Long-running stream stability across multiple stations
