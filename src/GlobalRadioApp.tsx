@@ -56,6 +56,30 @@ const JAPAN_PRIORITY_FILTERS: RadioFilters = {
   sort: 'quality'
 };
 
+type CountryAliasSet = {
+  exact?: string[];
+  contains?: string[];
+};
+
+const COUNTRY_QUERY_ALIASES: Record<string, CountryAliasSet> = {
+  AU: { exact: ['australia'] },
+  BR: { exact: ['brazil'] },
+  CA: { exact: ['canada'] },
+  CN: { exact: ['china'], contains: ['mainland china'] },
+  DE: { exact: ['germany'] },
+  ES: { exact: ['spain'] },
+  FR: { exact: ['france'] },
+  GB: { exact: ['uk', 'britain'], contains: ['united kingdom', 'great britain'] },
+  IT: { exact: ['italy'] },
+  JP: { exact: ['japan', '\uC77C\uBCF8', '\u65E5\u672C'] },
+  KP: { exact: ['dprk', '\uBD81\uD55C'], contains: ['north korea'] },
+  KR: { exact: ['korea', '\uD55C\uAD6D', '\uB300\uD55C\uBBFC\uAD6D'], contains: ['south korea', 'republic of korea'] },
+  NL: { exact: ['netherlands', 'holland'] },
+  SG: { exact: ['singapore'] },
+  TW: { exact: ['taiwan', '\uB300\uB9CC', '\uD0C0\uC774\uC644'] },
+  US: { exact: ['usa', 'america'], contains: ['united states', 'united states of america'] }
+};
+
 function normalizeSearchToken(value: string): string {
   return value
     .trim()
@@ -75,10 +99,54 @@ function getRegionName(countryCode: string, locale: string): string {
   }
 }
 
+function queryContainsTerm(query: string, term: string): boolean {
+  if (!term) {
+    return false;
+  }
+
+  if (query === term) {
+    return true;
+  }
+
+  if (term.includes(' ')) {
+    return query.includes(term);
+  }
+
+  return query.split(' ').includes(term);
+}
+
+function matchesCountryAlias(countryCode: string, query: string): boolean {
+  const aliases = COUNTRY_QUERY_ALIASES[countryCode];
+  if (!aliases) {
+    return false;
+  }
+
+  const exactAliases = (aliases.exact ?? []).map(normalizeSearchToken);
+  if (exactAliases.includes(query)) {
+    return true;
+  }
+
+  const containsAliases = (aliases.contains ?? []).map(normalizeSearchToken);
+  if (containsAliases.some((term) => queryContainsTerm(query, term))) {
+    return true;
+  }
+
+  if (countryCode === 'KR' && queryContainsTerm(query, 'north korea')) {
+    return false;
+  }
+
+  return exactAliases.some((term) => queryContainsTerm(query, term));
+}
+
 function inferCountryFromQuery(query: string, countries: RadioBrowserFilterOption[]): string {
   const normalizedQuery = normalizeSearchToken(query);
   if (normalizedQuery.length < 2) {
     return '';
+  }
+
+  const aliasMatchedCountry = countries.find((country) => country.value && matchesCountryAlias(country.value.toUpperCase(), normalizedQuery));
+  if (aliasMatchedCountry) {
+    return aliasMatchedCountry.value.toUpperCase();
   }
 
   for (const country of countries) {
@@ -102,7 +170,7 @@ function inferCountryFromQuery(query: string, countries: RadioBrowserFilterOptio
       getRegionName(code, 'de')
     ].map(normalizeSearchToken);
 
-    if (terms.some((term) => term && term === normalizedQuery)) {
+    if (terms.some((term) => queryContainsTerm(normalizedQuery, term))) {
       return code;
     }
   }
@@ -123,6 +191,17 @@ function alignFiltersWithQuery(filters: RadioFilters, query: string, countries: 
     tag: ''
   };
 }
+
+function getStationSearchQuery(query: string, countries: RadioBrowserFilterOption[]): string {
+  return inferCountryFromQuery(query, countries) ? '' : query;
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const __globalRadioTestHooks = {
+  inferCountryFromQuery,
+  alignFiltersWithQuery,
+  getStationSearchQuery
+};
 
 function stationFromStored(station: StoredStation): RadioStation {
   return {
@@ -289,11 +368,11 @@ export default function GlobalRadioApp() {
     }
 
     const timer = window.setTimeout(() => {
-      void loadStations(filtersRef.current, query);
+      void loadStations(filtersRef.current, getStationSearchQuery(query, filterOptions.countries));
     }, 420);
 
     return () => window.clearTimeout(timer);
-  }, [filters.country, filters.language, filters.tag, loadStations, query]);
+  }, [filterOptions.countries, filters.country, filters.language, filters.tag, loadStations, query]);
 
   useEffect(() => {
     let mounted = true;
@@ -467,8 +546,9 @@ export default function GlobalRadioApp() {
 
   function submitSearch() {
     const nextFilters = alignFiltersWithQuery(filters, query, filterOptions.countries);
+    const nextStationSearchQuery = getStationSearchQuery(query, filterOptions.countries);
     setFilters(nextFilters);
-    void loadStations(nextFilters, query);
+    void loadStations(nextFilters, nextStationSearchQuery);
   }
 
   function focusJapanTag(tag: RadioFilters['tag']) {
@@ -798,7 +878,7 @@ export default function GlobalRadioApp() {
         <div className="radio-empty-state">
           <RotateCcw aria-hidden="true" size={24} />
           <p>{listError}</p>
-          <button className="radio-button secondary" type="button" onClick={() => void loadStations(filters, query)}>
+          <button className="radio-button secondary" type="button" onClick={() => void loadStations(filters, getStationSearchQuery(query, filterOptions.countries))}>
             다시 시도하기
           </button>
         </div>
