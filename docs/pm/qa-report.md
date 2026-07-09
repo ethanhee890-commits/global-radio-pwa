@@ -766,3 +766,45 @@ tags:
 - Real Android notification/alarm behavior
 - Real iOS Safari/audio behavior
 - Long-running audio stability
+
+## 2026-07-10 Android FileProvider Surface QA Follow-up
+
+### Finding
+
+- Android manifest still included a default `FileProvider` entry and `res/xml/file_paths.xml` exposed `<external-path path="." />`.
+- The current 지구라디오 app does not use camera, file attachment, export, or share flows. Exposing the whole external storage root was unnecessary for the MVP and increased the native package attack surface.
+
+### Fixed
+
+- `android/app/src/main/res/xml/file_paths.xml` now exposes only app cache through `<cache-path name="shared_cache" path="." />`.
+- `security:scan` now fails if `file_paths.xml` reintroduces a whole-root `external-path`.
+
+### Automated Checks
+
+- `npm.cmd run security:scan`: PASS
+- `npm.cmd run android:debug`: PASS, debug APK build completed after `cap sync android`
+- `npm.cmd run verify`: PASS
+  - lint: PASS
+  - typecheck: PASS
+  - Vitest: PASS, 15 files / 53 tests
+  - production build: PASS
+  - security scan: PASS
+- `.\gradlew.bat :app:lintDebug --console=plain`: PASS
+  - `lint-results-debug.xml` issue count: 0
+
+### Package Evidence
+
+- Latest local debug APK: `release\global-radio-android-2026-07-10-qa10\jigu-radio-debug-2026-07-10-qa10.apk`
+- Latest local debug ZIP: `release\global-radio-android-2026-07-10-qa10\jigu-radio-debug-2026-07-10-qa10.zip`
+- APK SHA-256: `883DDEDFFEEFE92BBD927ABF5882A4E3C2E5505989DEE8591944A4161940442A`
+- ZIP SHA-256: `B8FAEE13CE832AECCF175ED7503B82FFBF541F0CD59BE49931CC516C3DC90624`
+- APK bundled public assets: 18
+- Bundled JS/CSS contains current Lofi Girl YouTube ID `X4VbdwhkE10`: yes
+- Bundled JS/CSS contains old Lofi Girl YouTube ID `jfKfPfyJRdk`: no
+- `yt-dlp` / `youtube-dl` pattern: no
+- hidden YouTube iframe pattern: no
+
+### Not Checked
+
+- Android/iOS physical-device install from the qa10 package
+- Runtime verification that no third-party Capacitor/Cordova component expects the removed external file provider path; build/lint passed and no app code references it

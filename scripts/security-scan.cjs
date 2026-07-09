@@ -230,6 +230,7 @@ if (!radioBrowser.includes('getSafeHttpsUrl(item.favicon)') || !globalRadioStora
 
 const androidManifest = readText(path.join(root, 'android', 'app', 'src', 'main', 'AndroidManifest.xml'));
 const androidNetworkSecurity = readText(path.join(root, 'android', 'app', 'src', 'main', 'res', 'xml', 'network_security_config.xml'));
+const androidFilePaths = readText(path.join(root, 'android', 'app', 'src', 'main', 'res', 'xml', 'file_paths.xml'));
 if (androidManifest) {
   if (!androidManifest.includes('android:usesCleartextTraffic="true"')) {
     findings.push('android/app/src/main/AndroidManifest.xml: Android must explicitly allow HTTP radio streams.');
@@ -254,6 +255,9 @@ if (androidManifest) {
       findings.push(`android/app/src/main/AndroidManifest.xml: missing native radio item ${requiredAndroidNativeItem}.`);
     }
   }
+}
+if (androidFilePaths && /<external-path\b[^>]*path="\.?"/.test(androidFilePaths)) {
+  findings.push('android/app/src/main/res/xml/file_paths.xml: FileProvider must not expose the whole external storage root.');
 }
 
 const nativeRadioPlugin = readText(path.join(root, 'android', 'app', 'src', 'main', 'java', 'com', 'dexcompany', 'globalradio', 'NativeRadioPlugin.java'));
