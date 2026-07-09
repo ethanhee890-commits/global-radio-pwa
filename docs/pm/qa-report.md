@@ -691,3 +691,78 @@ tags:
 - Real Android exact alarm behavior at wall-clock time
 - iOS native archive/signing and physical-device smoke test
 - Long-running stream stability across multiple stations
+
+## 2026-07-10 Release Alias and Mobile List QA Follow-up
+
+### Finding
+
+- GitHub 릴리즈에는 최신 `qa9` APK/ZIP 외에도 `jigu-radio-debug-2026-07-10.apk`, `jigu-radio-latest-debug.apk` 같은 alias 파일이 함께 남아 있었습니다.
+- `qa9`는 최신이었지만 alias 파일 크기가 과거 빌드와 달라, 사용자가 오래된 alias 링크를 클릭하면 최신 수정이 반영되지 않은 APK를 받을 수 있는 공유 오류 가능성이 있었습니다.
+
+### Fixed
+
+- `jigu-radio-debug-2026-07-10.apk`
+- `jigu-radio-debug-2026-07-10.zip`
+- `jigu-radio-latest-debug.apk`
+- `jigu-radio-latest-debug.zip`
+
+위 4개 alias 파일을 `qa9`와 동일한 APK/ZIP 내용으로 다시 업로드했습니다.
+
+### Release Asset Checks
+
+- `jigu-radio-debug-2026-07-10-qa9.apk`: HTTP 200, 28,602,704 bytes
+- `jigu-radio-debug-2026-07-10.apk`: HTTP 200, 28,602,704 bytes
+- `jigu-radio-latest-debug.apk`: HTTP 200, 28,602,704 bytes
+- `jigu-radio-debug-2026-07-10-qa9.zip`: HTTP 200, 28,022,337 bytes
+- `jigu-radio-debug-2026-07-10.zip`: HTTP 200, 28,022,337 bytes
+- `jigu-radio-latest-debug.zip`: HTTP 200, 28,022,337 bytes
+- APK aliases SHA-256: `65628D1904E11E240FE6FE9F6CDEA309112C26AC45A3E51EEC86138FB0837AA3`
+- ZIP aliases SHA-256: `057F77785399EBF07A7B9A11F45C4A7F8A0FDD3E7F2915EE1C89B8206CF0C9DE`
+
+### APK Internal Asset Checks
+
+- APK `assets/public` entries: 18
+- Bundled JS/CSS contains current Lofi Girl YouTube ID `X4VbdwhkE10`: yes
+- Bundled JS/CSS contains old Lofi Girl YouTube ID `jfKfPfyJRdk`: no
+- `yt-dlp` / `youtube-dl` pattern: no
+- hidden YouTube iframe pattern: no
+- YouTube embed origin parameter logic: present
+
+### Rendered Browser QA
+
+- Public URL checked: `https://ethanhee890-commits.github.io/global-radio-pwa/`
+- Browser path: PASS
+- Mobile 390px home:
+  - Page title: `지구라디오`
+  - Station cards: 168
+  - Search input padding: `16px / 16px`
+  - Search input and country filter overlap: no
+  - Bottom navigation widths: equal
+  - Horizontal overflow: none
+  - Console warning/error: none
+- Saved tab:
+  - Saving the first visible station added 1 saved card
+  - Saved tab showed no in-page `.direct-player`
+  - Saved tab showed no in-page `.station-detail`
+  - Hero area hidden outside Home
+  - Whole-list delete cleared the saved list
+  - Empty state rendered correctly
+  - Console warning/error: none
+- Recent tab:
+  - Empty recent state rendered without duplicate player/detail panels
+  - Whole-list delete hidden when the list is empty
+  - Horizontal overflow: none
+  - Console warning/error: none
+- Settings tab:
+  - Alarm helper copy is web-scoped and does not mention Android/iOS
+  - Hour/minute labels are outside the input boxes
+  - Settings screen no longer exposes recent/favorite delete duplicate buttons
+  - Alarm primary button computed style: red primary background, white text, opacity 1
+  - Horizontal overflow: none
+
+### Not Checked
+
+- Android/iOS physical-device install from the refreshed alias links
+- Real Android notification/alarm behavior
+- Real iOS Safari/audio behavior
+- Long-running audio stability
