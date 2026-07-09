@@ -59,6 +59,11 @@ function getGenreOptions(country: string, globalTags: RadioBrowserFilterOption[]
   return uniqueOptions([baseOptions[0] ?? GENERAL_GENRE_OPTIONS[0], ...JAPAN_GENRE_OPTIONS, ...baseOptions.slice(1)]);
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
+export const __filterBarTestHooks = {
+  getGenreOptions
+};
+
 function hasOptionValue(options: FilterOption[], value: string): boolean {
   return options.some((option) => option.value === value);
 }

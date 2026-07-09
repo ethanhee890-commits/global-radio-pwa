@@ -52,4 +52,21 @@ describe('global radio search and filter relationship', () => {
     expect(__globalRadioTestHooks.getStationSearchQuery('japan radio', countries)).toBe('');
     expect(__globalRadioTestHooks.getStationSearchQuery('jazz festival', countries)).toBe('jazz festival');
   });
+
+  it('clears a country search cue when the user manually chooses a different country', () => {
+    const currentFilters: RadioFilters = {
+      country: 'JP',
+      language: '',
+      tag: '',
+      sort: 'quality'
+    };
+
+    const nextFilters: RadioFilters = {
+      ...currentFilters,
+      country: 'ES'
+    };
+
+    expect(__globalRadioTestHooks.getQueryAfterFilterChange('japan', countries, currentFilters, nextFilters)).toBe('');
+    expect(__globalRadioTestHooks.getQueryAfterFilterChange('japan', countries, currentFilters, currentFilters)).toBe('japan');
+  });
 });

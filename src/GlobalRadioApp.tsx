@@ -196,11 +196,23 @@ function getStationSearchQuery(query: string, countries: RadioBrowserFilterOptio
   return inferCountryFromQuery(query, countries) ? '' : query;
 }
 
+function getQueryAfterFilterChange(query: string, countries: RadioBrowserFilterOption[], currentFilters: RadioFilters, nextFilters: RadioFilters): string {
+  const inferredCountry = inferCountryFromQuery(query, countries);
+  const countryChanged = currentFilters.country !== nextFilters.country;
+
+  if (countryChanged && inferredCountry && nextFilters.country !== inferredCountry) {
+    return '';
+  }
+
+  return query;
+}
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const __globalRadioTestHooks = {
   inferCountryFromQuery,
   alignFiltersWithQuery,
-  getStationSearchQuery
+  getStationSearchQuery,
+  getQueryAfterFilterChange
 };
 
 function stationFromStored(station: StoredStation): RadioStation {
@@ -536,6 +548,11 @@ export default function GlobalRadioApp() {
   }, [alarmStation, nativePlaybackEnabled]);
 
   function updateFilters(nextFilters: RadioFilters) {
+    const nextQuery = getQueryAfterFilterChange(query, filterOptions.countries, filters, nextFilters);
+    if (nextQuery !== query) {
+      setQuery(nextQuery);
+    }
+
     setFilters(nextFilters);
   }
 
