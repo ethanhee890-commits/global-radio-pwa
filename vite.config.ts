@@ -15,6 +15,11 @@ export default defineConfig({
   plugins: [devOnlyCspBypass(), react()],
   base: './',
   publicDir: 'public-radio',
+  server: {
+    watch: {
+      ignored: ['**/.gradle-user-home/**', '**/android/**', '**/dist/**', '**/ios/**', '**/release/**']
+    }
+  },
   test: {
     environment: 'jsdom',
     globals: true
