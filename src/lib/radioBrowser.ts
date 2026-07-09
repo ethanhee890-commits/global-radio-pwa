@@ -143,10 +143,6 @@ function toTitleLabel(value: string): string {
     .join(' ');
 }
 
-function withCount(label: string, count: number): string {
-  return count > 0 ? `${label} · ${count.toLocaleString()}` : label;
-}
-
 function normalizeCountryOptions(items: RadioBrowserMetaItem[]): RadioBrowserFilterOption[] {
   const seen = new Set<string>();
   const options = items
@@ -161,7 +157,7 @@ function normalizeCountryOptions(items: RadioBrowserMetaItem[]): RadioBrowserFil
 
       seen.add(countryCode);
       return {
-        label: withCount(`${name} (${countryCode})`, stationcount),
+        label: `${name} (${countryCode})`,
         value: countryCode,
         stationcount
       };
@@ -185,7 +181,7 @@ function normalizeLanguageOptions(items: RadioBrowserMetaItem[]): RadioBrowserFi
 
       seen.add(name);
       return {
-        label: withCount(toTitleLabel(name), stationcount),
+        label: toTitleLabel(name),
         value: name,
         stationcount
       };
@@ -209,7 +205,7 @@ function normalizeTagOptions(items: RadioBrowserMetaItem[]): RadioBrowserFilterO
 
       seen.add(name);
       return {
-        label: withCount(toTitleLabel(name), stationcount),
+        label: toTitleLabel(name),
         value: name,
         stationcount
       };

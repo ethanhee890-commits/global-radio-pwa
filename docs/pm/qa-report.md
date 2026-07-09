@@ -1003,3 +1003,77 @@ tags:
 - iOS physical-device install
 - iOS Safari direct stream playback rate
 - Long-running background playback and alarm behavior on real devices
+
+## 2026-07-10 QA15 Filter Metadata Count Follow-up
+
+### Finding
+
+- Country, language, and genre dropdown options showed Radio Browser metadata totals such as `Germany (DE) · 5,990` and `English · 12,249`.
+- The result heading showed the current searchable station list count, for example `168개 방송`.
+- The two numbers came from different scopes, so users could reasonably read the option count as a bug when it did not match the visible result count.
+
+### Fixed
+
+- Removed metadata counts from visible country, language, and genre option labels.
+- Preserved `stationcount` internally so metadata-based ordering still works.
+- Added regression coverage so Radio Browser metadata labels no longer expose `· number` count strings.
+
+### Automated Checks
+
+- `npm.cmd test -- radioBrowserMetadata.test.ts`: PASS, 1 file / 4 tests
+- `npm.cmd run typecheck`: PASS
+- `npm.cmd run verify`: PASS
+  - lint: PASS
+  - typecheck: PASS
+  - Vitest: PASS, 16 files / 60 tests
+  - production build: PASS
+  - security scan: PASS
+- `npm.cmd run android:debug`: PASS
+
+### Rendered Local QA
+
+- URL: `http://127.0.0.1:5179/`
+- Mobile 390px initial state:
+  - Result heading: `지금 듣기 좋은 방송168개 방송`
+  - Selected filters: `전체`, `전체`, `전체`, `품질순`
+  - Horizontal overflow: none
+  - Vite overlay: none
+- Country dropdown sample:
+  - `전체`
+  - `The United States Of America (US)`
+  - `Germany (DE)`
+  - `The Russian Federation (RU)`
+  - `France (FR)`
+  - Count separator `·`: none
+  - Comma-number suffix: none
+- Language dropdown sample:
+  - `전체`
+  - `English`
+  - `Spanish`
+  - `German`
+  - `Chinese`
+  - Count separator `·`: none
+  - Comma-number suffix: none
+- Genre dropdown sample:
+  - `전체`
+  - `페스티벌/라이브`
+  - `Pop`
+  - `Music`
+  - `Rock`
+  - Count separator `·`: none
+  - Comma-number suffix: none
+
+### Package Evidence
+
+- Latest APK release asset: `jigu-radio-latest-debug.apk`
+- QA15 APK release asset: `jigu-radio-debug-2026-07-10-qa15.apk`
+- APK size: `28602704`
+- APK SHA-256: `84035BDC92BA0655A48382F6AFDF57B8BE3855C867FD3DEC50B25593424CC978`
+- Release asset HEAD check: PASS, HTTP 200, `application/vnd.android.package-archive`
+
+### Not Checked
+
+- Android physical-device install and audio output from the QA15 APK
+- iOS physical-device install
+- iOS Safari direct stream playback rate
+- Long-running background playback and alarm behavior on real devices
