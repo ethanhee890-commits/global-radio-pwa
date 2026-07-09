@@ -307,7 +307,7 @@ function matchesFallback(station: RadioStation, params: SearchStationsParams): b
 
 export function buildSearchUrl(baseUrl: string, params: SearchStationsParams): string {
   const query = new URLSearchParams({
-    hidebroken: 'false',
+    hidebroken: 'true',
     limit: String(params.limit ?? 60),
     order: 'votes',
     reverse: 'true'

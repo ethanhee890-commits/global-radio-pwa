@@ -526,3 +526,45 @@ tags:
 - iOS Safari physical-device direct stream playback
 - iOS native archive/signing and physical-device smoke test
 - Long-running stream stability across multiple stations
+
+## 2026-07-10 Radio Browser Broken Stream QA Follow-up
+
+### Fixed
+
+- Radio Browser station search now sends `hidebroken=true`. Known broken stations are excluded at the API query layer before the app applies its local quality score, reducing cases where a visually high-scoring station still fails immediately because the directory already marked it broken.
+- The Radio Browser metadata regression test now asserts `hidebroken=true` in generated search URLs.
+- `security:scan` now checks both `public/manifest.webmanifest` and `public-radio/manifest.webmanifest`, plus the `public` runtime asset tree, so root-relative PWA manifest regressions cannot hide outside the production `public-radio` folder.
+
+### Automated Checks
+
+- Targeted Vitest:
+  - `src/test/radioBrowserMetadata.test.ts`: PASS
+  - `src/test/qualityScore.test.ts`: PASS
+  - `src/test/playbackSource.test.ts`: PASS
+  - `src/test/publicAssets.test.ts`: PASS
+- `npm.cmd run verify`: PASS
+  - lint: PASS
+  - typecheck: PASS
+  - Vitest: PASS, 15 files / 51 tests
+  - production build: PASS
+  - security scan: PASS
+- `npm.cmd audit --audit-level=moderate`: PASS, 0 vulnerabilities
+- `npm.cmd run android:debug`: PASS, debug APK build completed with latest web assets
+
+### Evidence
+
+- Latest local debug APK: `release\global-radio-android-2026-07-10-qa7\jigu-radio-debug-2026-07-10-qa7.apk`
+- Latest local debug ZIP: `release\global-radio-android-2026-07-10-qa7\jigu-radio-debug-2026-07-10-qa7.zip`
+- APK SHA-256: `468138CCAB7F43228D8234D8D8412D1EE463CF4BADD6BC450A5660DC6ECC8855`
+
+### Not Checked
+
+- 360px/390px rendered mobile screenshots for this exact patch, because Browser URL policy blocked local app navigation/reload and no workaround was used
+- Live Radio Browser production sample success rate after the `hidebroken=true` query change
+- Android emulator or physical-device install/launch smoke test, because no device/emulator was connected
+- Real Android notification tray rendering
+- Real Android exact alarm permission screen behavior
+- Real scheduled alarm playback at wall-clock time on Android
+- iOS Safari physical-device direct stream playback
+- iOS native archive/signing and physical-device smoke test
+- Long-running stream stability across multiple stations

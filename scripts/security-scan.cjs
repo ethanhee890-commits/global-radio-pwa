@@ -114,9 +114,10 @@ function assertRelativeManifest(manifestPath) {
   }
 }
 
-for (const runtimeRoot of ['src', 'public-radio', 'scripts', 'dist']) {
+for (const runtimeRoot of ['src', 'public', 'public-radio', 'scripts', 'dist']) {
   walkRuntimeFiles(path.join(root, runtimeRoot), assertRuntimePolicy);
 }
+assertRelativeManifest(path.join(root, 'public', 'manifest.webmanifest'));
 assertRelativeManifest(path.join(root, 'public-radio', 'manifest.webmanifest'));
 assertRelativeManifest(path.join(root, 'dist', 'manifest.webmanifest'));
 

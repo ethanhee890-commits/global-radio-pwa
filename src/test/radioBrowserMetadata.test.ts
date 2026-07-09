@@ -22,6 +22,7 @@ describe('Radio Browser global metadata options', () => {
 
     expect(url.searchParams.get('countrycode')).toBe('JP');
     expect(url.searchParams.has('country')).toBe(false);
+    expect(url.searchParams.get('hidebroken')).toBe('true');
     expect(url.searchParams.get('language')).toBe('japanese');
     expect(url.searchParams.get('tag')).toBe('jazz');
     expect(url.searchParams.get('limit')).toBe('160');
